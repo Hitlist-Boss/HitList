@@ -2,173 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>HITLIST</title>
 <link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
   --red:#ff2a2a;
-  --red2:#cc0000;
   --bg:#0a0a0a;
-  --bg2:#111111;
-  --bg3:#1a1a1a;
-  --border:#222;
-  --text:#e8e8e8;
-  --muted:#555;
+  --bg2:#141414;
+  --bg3:#1e1e1e;
+  --border:#2a2a2a;
+  --text:#ffffff;
+  --text2:#cccccc;
+  --muted:#888888;
   --mono:'Share Tech Mono',monospace;
   --display:'Oswald',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden;overscroll-behavior:none}
 
 /* SPLASH */
 #splash{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s}
 #splash.hide{opacity:0;pointer-events:none}
-.splash-logo{width:80px;height:80px;animation:pulse 1s ease-in-out infinite}
-.splash-title{font-family:var(--display);font-size:48px;letter-spacing:12px;color:var(--red);margin:20px 0 8px}
+.splash-logo{width:90px;height:90px;animation:pulse 1s ease-in-out infinite}
+.splash-title{font-family:var(--display);font-size:52px;letter-spacing:14px;color:var(--red);margin:20px 0 8px}
 .splash-sub{font-size:10px;letter-spacing:4px;color:var(--muted)}
 .splash-loading{margin-top:40px;font-size:10px;letter-spacing:3px;color:var(--muted)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* PIN SCREEN */
+/* PIN */
 #pinscreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999}
 #pinscreen.show{display:flex}
-.pin-title{font-family:var(--display);font-size:28px;letter-spacing:8px;color:var(--red);margin-bottom:8px}
-.pin-sub{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:40px}
+.pin-title{font-family:var(--display);font-size:30px;letter-spacing:10px;color:var(--red);margin-bottom:6px}
+.pin-sub{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:36px}
 .pin-dots{display:flex;gap:16px;margin-bottom:32px}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:1px solid var(--muted);transition:all 0.2s}
 .pin-dot.filled{background:var(--red);border-color:var(--red)}
-.pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px}
-.pin-btn{width:72px;height:72px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:20px;cursor:pointer;transition:all 0.15s}
+.pin-pad{display:grid;grid-template-columns:repeat(3,76px);gap:12px}
+.pin-btn{width:76px;height:76px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:22px;cursor:pointer;transition:all 0.15s}
 .pin-btn:hover{border-color:var(--red);color:var(--red)}
-.pin-btn:active{transform:scale(0.95);background:var(--bg3)}
-.pin-error{color:var(--red);font-size:11px;letter-spacing:2px;margin-top:16px;min-height:20px}
+.pin-btn:active{transform:scale(0.93);background:var(--bg3)}
+.pin-error{color:var(--red);font-size:11px;letter-spacing:2px;margin-top:16px;min-height:20px;text-align:center}
+.pin-forgot{color:var(--muted);font-size:9px;letter-spacing:2px;margin-top:20px;cursor:pointer;text-decoration:underline}
+.pin-forgot:hover{color:var(--red)}
 
-/* MAIN APP */
-#app{display:none;flex-direction:column;min-height:100vh}
+/* APP */
+#app{display:none;flex-direction:column;height:100vh;overflow:hidden}
 #app.show{display:flex}
 
 /* HEADER */
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-logo{display:flex;align-items:center;gap:12px}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100}
+.header-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
 .header-logo svg{width:28px;height:28px}
 .header-brand{font-family:var(--display);font-size:22px;letter-spacing:8px;color:var(--red)}
 .header-sub{font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:-2px}
-.header-stats{display:flex;gap:20px}
+.header-stats{display:flex;gap:16px}
 .hstat{text-align:right}
 .hstat-n{font-size:18px;color:var(--red);line-height:1}
 .hstat-l{font-size:8px;letter-spacing:2px;color:var(--muted)}
 
-/* NAV TABS */
-.nav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;overflow-x:auto}
-.nav-tab{padding:12px 20px;font-size:9px;letter-spacing:3px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s}
-.nav-tab.active{color:var(--red);border-bottom-color:var(--red)}
-.nav-tab:hover{color:var(--text)}
+/* SWIPE PAGES */
+.pages-wrap{flex:1;display:flex;overflow:hidden;position:relative}
+.pages-slider{display:flex;width:400%;height:100%;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.page{width:25%;height:100%;overflow-y:auto;padding:16px;flex-shrink:0}
 
-/* PAGES */
-.page{display:none;padding:20px;flex:1}
-.page.active{display:block}
+/* BOTTOM NAV */
+.bottom-nav{background:var(--bg2);border-top:1px solid var(--border);display:flex;flex-shrink:0}
+.bn-tab{flex:1;padding:12px 4px;text-align:center;cursor:pointer;transition:all 0.2s;border-top:2px solid transparent}
+.bn-tab.active{border-top-color:var(--red)}
+.bn-tab svg{width:20px;height:20px;display:block;margin:0 auto 3px;stroke:var(--muted);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.bn-tab.active svg{stroke:var(--red)}
+.bn-tab span{font-size:7px;letter-spacing:2px;color:var(--muted)}
+.bn-tab.active span{color:var(--red)}
 
 /* SECTION LABEL */
-.sec-label{font-size:9px;letter-spacing:4px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec-label{font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--bg3)}
 
-/* CARDS */
-.target-card{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:3px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s}
-.target-card:hover{border-color:#333;border-left-color:var(--red)}
-.target-card.eliminated{border-left-color:var(--muted);opacity:0.5}
-.target-card.selected{border-left-color:#2a7a2a}
-.tc-num{font-size:9px;color:var(--muted);min-width:28px}
-.tc-main{flex:1}
-.tc-company{font-size:13px;letter-spacing:1px}
-.tc-role{font-size:10px;color:var(--muted);margin-top:2px}
-.tc-date{font-size:9px;color:var(--muted);margin-right:8px}
-.badge{font-size:8px;letter-spacing:2px;padding:3px 8px;border-radius:2px;white-space:nowrap}
-.b-active{background:#1a0505;color:var(--red);border:1px solid #ff2a2a33}
-.b-pending{background:#111;color:var(--muted);border:1px solid var(--border)}
-.b-interview{background:#0a0a1a;color:#5577ff;border:1px solid #5577ff33}
-.b-selected{background:#0a1a0a;color:#2a9a2a;border:1px solid #2a9a2a33}
-.b-rejected{background:#111;color:#444;border:1px solid #222}
-
-/* FORM */
+/* INPUTS */
+.hl-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;letter-spacing:1px;outline:none;transition:border 0.2s}
+.hl-input:focus{border-color:#ff2a2a66}
+.hl-input::placeholder{color:var(--muted)}
+.hl-label{font-size:8px;letter-spacing:3px;color:var(--text2);margin-bottom:4px}
+.field{margin-bottom:10px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .form-row.single{grid-template-columns:1fr}
 .form-row.triple{grid-template-columns:1fr 1fr 1fr}
-.hl-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:10px 12px;letter-spacing:1px;outline:none;transition:border 0.2s}
-.hl-input:focus{border-color:#ff2a2a44}
-.hl-input::placeholder{color:#333}
-select.hl-input option{background:#111}
-.hl-btn{width:100%;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:3px;padding:12px;cursor:pointer;transition:all 0.2s;margin-top:4px}
+select.hl-input option{background:#111;color:#fff}
+
+/* BUTTONS */
+.hl-btn{width:100%;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:3px;padding:12px;cursor:pointer;transition:all 0.2s;margin-top:4px}
 .hl-btn:hover{border-color:var(--red);color:var(--red)}
 .hl-btn.primary{border-color:var(--red);color:var(--red)}
 .hl-btn.primary:hover{background:#1a0505}
+.hl-btn.danger{border-color:#444;color:#555}
+.add-more-btn{background:none;border:1px dashed var(--border);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:8px;cursor:pointer;width:100%;margin-top:6px;transition:all 0.2s}
+.add-more-btn:hover{border-color:var(--red);color:var(--red)}
 
-/* ALARM CARD */
-.alarm-card{background:var(--bg2);border:1px solid #ff2a2a22;border-radius:3px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.alarm-icon{color:var(--red);font-size:16px}
-.alarm-text{flex:1;font-size:11px;letter-spacing:1px}
-.alarm-time{font-size:10px;color:var(--red);min-width:50px;text-align:right}
-.alarm-del{color:#333;cursor:pointer;font-size:16px;padding:4px;transition:color 0.2s}
+/* TARGET CARDS */
+.target-card{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:3px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s}
+.target-card:hover{border-color:#333}
+.target-card.eliminated{border-left-color:#333;opacity:0.5}
+.target-card.won{border-left-color:#2a9a2a}
+.tc-num{font-size:9px;color:var(--muted);min-width:26px}
+.tc-main{flex:1;min-width:0}
+.tc-company{font-size:13px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-role{font-size:10px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-date{font-size:9px;color:var(--muted);margin-right:6px;white-space:nowrap}
+.badge{font-size:8px;letter-spacing:1px;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.b-applied{background:#1a0505;color:var(--red);border:1px solid #ff2a2a22}
+.b-interview{background:#0a0a1a;color:#5577ff;border:1px solid #5577ff22}
+.b-pending{background:#1a1500;color:#ddaa00;border:1px solid #ddaa0022}
+.b-selected{background:#0a1a0a;color:#2aaa2a;border:1px solid #2aaa2a22}
+.b-rejected{background:#111;color:#555;border:1px solid #222}
+
+/* ALARM */
+.alarm-card{background:var(--bg2);border:1px solid #ff2a2a22;border-radius:3px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.alarm-text{flex:1;font-size:11px;letter-spacing:1px;color:var(--text)}
+.alarm-time{font-size:9px;color:var(--red);white-space:nowrap}
+.alarm-del{color:var(--muted);cursor:pointer;font-size:18px;padding:4px;transition:color 0.2s;background:none;border:none}
 .alarm-del:hover{color:var(--red)}
 
-/* PROFILE */
-.profile-photo{width:100px;height:100px;border-radius:50%;border:2px solid var(--red);object-fit:cover;display:block;margin:0 auto 16px}
-.profile-photo-placeholder{width:100px;height:100px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;background:var(--bg2);color:var(--red);font-size:32px;cursor:pointer}
-.profile-field{margin-bottom:10px}
-.profile-label{font-size:8px;letter-spacing:3px;color:var(--muted);margin-bottom:4px}
+/* EDUCATION ROW */
+.edu-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.edu-row .hl-input{flex:1}
+.edu-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;flex-shrink:0}
+.edu-del:hover{color:var(--red)}
 
-/* WANTED POSTER */
-.poster-wrap{background:#f5e6c8;color:#1a0a00;padding:24px;border-radius:4px;max-width:380px;margin:0 auto;font-family:'Oswald',sans-serif;border:8px solid #8b4513;position:relative}
-.poster-wanted{font-size:52px;font-weight:700;letter-spacing:8px;text-align:center;color:#8b0000;line-height:1;text-shadow:2px 2px 0 #5a0000}
-.poster-dead{font-size:13px;letter-spacing:4px;text-align:center;color:#8b4513;margin-bottom:12px}
-.poster-photo{width:160px;height:160px;border:4px solid #8b4513;object-fit:cover;display:block;margin:0 auto 12px;filter:sepia(20%)}
-.poster-photo-ph{width:160px;height:160px;border:4px solid #8b4513;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:#e8d5a0;color:#8b4513;font-size:48px}
-.poster-name{font-size:28px;font-weight:700;text-align:center;letter-spacing:3px;color:#1a0a00;border-top:2px solid #8b4513;border-bottom:2px solid #8b4513;padding:6px 0;margin-bottom:10px}
-.poster-detail{font-size:11px;letter-spacing:1px;margin-bottom:4px;color:#3a1a00;font-family:var(--mono)}
-.poster-reward{font-size:20px;font-weight:700;text-align:center;color:#8b0000;margin-top:12px;letter-spacing:2px}
-.poster-qr{margin:12px auto 0;display:block;width:80px;height:80px}
-.poster-footer{font-size:8px;letter-spacing:2px;text-align:center;color:#8b4513;margin-top:8px;font-family:var(--mono)}
-
-/* GRID */
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.mini-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:14px}
-.mini-title{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:10px}
-.event-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.event-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
-.event-dot.gray{background:#333}
-.event-text{font-size:10px;color:#666;flex:1}
-.event-time{font-size:9px;color:#444}
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px;text-align:center}
+.stat-num{font-size:28px;color:var(--red);line-height:1}
+.stat-lbl{font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:4px}
 
 /* MODAL */
-.modal-bg{position:fixed;inset:0;background:#000000cc;display:none;align-items:center;justify-content:center;z-index:500;padding:20px}
+.modal-bg{position:fixed;inset:0;background:#000000dd;display:none;align-items:flex-end;justify-content:center;z-index:500;padding:0}
 .modal-bg.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:24px;width:100%;max-width:440px;max-height:80vh;overflow-y:auto}
-.modal-title{font-size:10px;letter-spacing:4px;color:var(--red);margin-bottom:20px}
-.modal-close{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;margin-top:-4px}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:20px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:9px;letter-spacing:4px;color:var(--red);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
 .modal-close:hover{color:var(--red)}
 
-/* NOTES */
-.notes-area{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:10px 12px;resize:vertical;min-height:80px;outline:none}
-.notes-area:focus{border-color:#ff2a2a44}
+/* PROFILE MODAL */
+.profile-modal-bg{position:fixed;inset:0;background:#000000ee;display:none;align-items:center;justify-content:center;z-index:600;padding:20px}
+.profile-modal-bg.show{display:flex}
+.profile-modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;width:100%;max-width:360px;text-align:center}
+.pm-photo{width:80px;height:80px;border-radius:50%;border:2px solid var(--red);object-fit:cover;display:block;margin:0 auto 12px}
+.pm-photo-ph{width:80px;height:80px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:var(--bg3);color:var(--red);font-size:28px}
+.pm-name{font-family:var(--display);font-size:22px;letter-spacing:4px;color:var(--text);margin-bottom:4px}
+.pm-role{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:16px}
+.pm-detail{font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:6px;text-align:left}
+.pm-qr-label{font-size:8px;letter-spacing:3px;color:var(--muted);margin:16px 0 8px}
+.pm-close{margin-top:16px;width:100%}
+.pm-divider{height:1px;background:var(--border);margin:12px 0}
 
-/* CURSOR BLINK */
-.cursor{display:inline-block;width:8px;height:14px;background:var(--red);animation:blink 1s step-end infinite;vertical-align:middle}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* WANTED POSTER */
+.poster-wrap{background:#f2e0b0;color:#1a0a00;padding:20px;border-radius:4px;border:6px solid #7a3b10;font-family:var(--display);position:relative;max-width:340px;margin:0 auto}
+.poster-wanted{font-size:48px;font-weight:700;letter-spacing:8px;text-align:center;color:#8b0000;line-height:1;text-shadow:2px 2px 0 #5a0000}
+.poster-dead{font-size:11px;letter-spacing:3px;text-align:center;color:#7a3b10;margin-bottom:10px;font-family:var(--mono)}
+.poster-photo{width:140px;height:140px;border:4px solid #7a3b10;object-fit:cover;display:block;margin:0 auto 10px;filter:sepia(15%)}
+.poster-photo-ph{width:140px;height:140px;border:4px solid #7a3b10;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;background:#e0c880;color:#7a3b10;font-size:44px}
+.poster-name{font-size:24px;font-weight:700;text-align:center;letter-spacing:3px;color:#1a0a00;border-top:2px solid #7a3b10;border-bottom:2px solid #7a3b10;padding:5px 0;margin-bottom:10px}
+.poster-detail{font-size:10px;letter-spacing:1px;margin-bottom:4px;color:#3a1a00;font-family:var(--mono)}
+.poster-reward{font-size:18px;font-weight:700;text-align:center;color:#8b0000;margin-top:10px;letter-spacing:2px}
+.poster-footer{font-size:7px;letter-spacing:2px;text-align:center;color:#7a3b10;margin-top:8px;font-family:var(--mono)}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--red);border-radius:3px;padding:10px 20px;font-size:10px;letter-spacing:2px;color:var(--red);z-index:9000;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--red);border-radius:3px;padding:10px 20px;font-size:10px;letter-spacing:2px;color:var(--red);z-index:9000;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+
+/* CURSOR */
+.cursor{display:inline-block;width:8px;height:16px;background:var(--red);animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* COUNTRY SEARCH */
+.search-dropdown{position:relative}
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 3px 3px;max-height:180px;overflow-y:auto;z-index:200;display:none}
+.search-results.show{display:block}
+.search-item{padding:8px 12px;font-size:11px;color:var(--text2);cursor:pointer;letter-spacing:1px}
+.search-item:hover{background:var(--bg2);color:var(--red)}
 
 @media(max-width:480px){
   .form-row{grid-template-columns:1fr}
   .form-row.triple{grid-template-columns:1fr 1fr}
-  .bottom-grid{grid-template-columns:1fr}
-  .header-stats{gap:12px}
-  .hstat-n{font-size:14px}
+  .stats-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -176,21 +196,21 @@ select.hl-input option{background:#111}
 
 <!-- SPLASH -->
 <div id="splash">
-  <svg class="splash-logo" viewBox="0 0 80 80" fill="none">
-    <circle cx="40" cy="40" r="36" stroke="#ff2a2a" stroke-width="2"/>
-    <circle cx="40" cy="40" r="22" stroke="#ff2a2a" stroke-width="1" stroke-dasharray="3 3"/>
-    <circle cx="40" cy="40" r="7" fill="#ff2a2a"/>
-    <line x1="40" y1="4" x2="40" y2="18" stroke="#ff2a2a" stroke-width="2"/>
-    <line x1="40" y1="62" x2="40" y2="76" stroke="#ff2a2a" stroke-width="2"/>
-    <line x1="4" y1="40" x2="18" y2="40" stroke="#ff2a2a" stroke-width="2"/>
-    <line x1="62" y1="40" x2="76" y2="40" stroke="#ff2a2a" stroke-width="2"/>
+  <svg class="splash-logo" viewBox="0 0 90 90" fill="none">
+    <circle cx="45" cy="45" r="40" stroke="#ff2a2a" stroke-width="2.5"/>
+    <circle cx="45" cy="45" r="25" stroke="#ff2a2a" stroke-width="1" stroke-dasharray="4 4"/>
+    <circle cx="45" cy="45" r="8" fill="#ff2a2a"/>
+    <line x1="45" y1="5" x2="45" y2="20" stroke="#ff2a2a" stroke-width="2.5"/>
+    <line x1="45" y1="70" x2="45" y2="85" stroke="#ff2a2a" stroke-width="2.5"/>
+    <line x1="5" y1="45" x2="20" y2="45" stroke="#ff2a2a" stroke-width="2.5"/>
+    <line x1="70" y1="45" x2="85" y2="45" stroke="#ff2a2a" stroke-width="2.5"/>
   </svg>
   <div class="splash-title">HITLIST</div>
-  <div class="splash-sub">JOB TRACKER — CLASSIFIED</div>
-  <div class="splash-loading" id="splashMsg">INITIALIZING SYSTEM...</div>
+  <div class="splash-sub">CLASSIFIED JOB TRACKER</div>
+  <div class="splash-loading" id="splashMsg">INITIALIZING...</div>
 </div>
 
-<!-- PIN SCREEN -->
+<!-- PIN -->
 <div id="pinscreen">
   <div class="pin-title">HITLIST</div>
   <div class="pin-sub" id="pinLabel">ENTER ACCESS CODE</div>
@@ -210,17 +230,26 @@ select.hl-input option{background:#111}
     <button class="pin-btn" onclick="pinPress('7')">7</button>
     <button class="pin-btn" onclick="pinPress('8')">8</button>
     <button class="pin-btn" onclick="pinPress('9')">9</button>
-    <button class="pin-btn" onclick="pinPress('clr')" style="color:#555">CLR</button>
+    <button class="pin-btn" onclick="pinPress('clr')" style="color:var(--muted)">CLR</button>
     <button class="pin-btn" onclick="pinPress('0')">0</button>
     <button class="pin-btn" onclick="pinPress('ok')" style="color:var(--red)">OK</button>
   </div>
   <div class="pin-error" id="pinError"></div>
+  <div class="pin-forgot" onclick="forgotPin()">FORGOT PIN?</div>
 </div>
 
-<!-- MAIN APP -->
+<!-- PROFILE POPUP -->
+<div class="profile-modal-bg" id="profilePopup">
+  <div class="profile-modal">
+    <div id="pmContent"></div>
+    <button class="hl-btn pm-close" onclick="closeProfilePopup()">CLOSE</button>
+  </div>
+</div>
+
+<!-- APP -->
 <div id="app">
   <div class="header">
-    <div class="header-logo">
+    <div class="header-logo" onclick="openProfilePopup()">
       <svg viewBox="0 0 28 28" fill="none">
         <circle cx="14" cy="14" r="12" stroke="#ff2a2a" stroke-width="1.5"/>
         <circle cx="14" cy="14" r="7" stroke="#ff2a2a" stroke-width="0.7" stroke-dasharray="2 2"/>
@@ -237,202 +266,167 @@ select.hl-input option{background:#111}
     </div>
     <div class="header-stats">
       <div class="hstat"><div class="hstat-n" id="statApplied">0</div><div class="hstat-l">APPLIED</div></div>
-      <div class="hstat"><div class="hstat-n" id="statInterview">0</div><div class="hstat-l">INTERVIEWS</div></div>
-      <div class="hstat"><div class="hstat-n" id="statActive">0</div><div class="hstat-l">ACTIVE</div></div>
+      <div class="hstat"><div class="hstat-n" id="statInt">0</div><div class="hstat-l">INTERVIEWS</div></div>
+      <div class="hstat"><div class="hstat-n" id="statSel">0</div><div class="hstat-l">SELECTED</div></div>
     </div>
   </div>
 
-  <div class="nav">
-    <div class="nav-tab active" onclick="showPage('targets',this)">TARGETS</div>
-    <div class="nav-tab" onclick="showPage('alarms',this)">ALARMS</div>
-    <div class="nav-tab" onclick="showPage('profile',this)">PROFILE</div>
-    <div class="nav-tab" onclick="showPage('poster',this)">WANTED</div>
-    <div class="nav-tab" onclick="showPage('settings',this)">SETTINGS</div>
-  </div>
+  <div class="pages-wrap" id="pagesWrap">
+    <div class="pages-slider" id="pagesSlider">
 
-  <!-- TARGETS PAGE -->
-  <div class="page active" id="page-targets">
-    <div class="sec-label">ADD TARGET</div>
-    <div class="form-row">
-      <input class="hl-input" id="inCompany" placeholder="COMPANY NAME">
-      <input class="hl-input" id="inRole" placeholder="ROLE / POSITION">
-    </div>
-    <div class="form-row triple">
-      <input class="hl-input" id="inDate" type="date">
-      <select class="hl-input" id="inStatus">
-        <option value="applied">APPLIED</option>
-        <option value="interview">INTERVIEW</option>
-        <option value="pending">RESULT PENDING</option>
-        <option value="selected">SELECTED</option>
-        <option value="rejected">REJECTED</option>
-      </select>
-      <input class="hl-input" id="inLocation" placeholder="LOCATION">
-    </div>
-    <div class="form-row single">
-      <input class="hl-input" id="inNotes" placeholder="NOTES / INTEL">
-    </div>
-    <button class="hl-btn primary" onclick="addTarget()">+ LOCK TARGET</button>
-
-    <div style="margin-top:24px">
-      <div class="sec-label">ACTIVE TARGETS</div>
-      <div id="targetList"></div>
-    </div>
-
-    <div class="bottom-grid">
-      <div class="mini-card">
-        <div class="mini-title">UPCOMING EVENTS</div>
-        <div id="upcomingList"><div style="font-size:10px;color:#333">NO EVENTS</div></div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-title">MISSION STATS</div>
-        <div id="statsList"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ALARMS PAGE -->
-  <div class="page" id="page-alarms">
-    <div class="sec-label">SET ALARM</div>
-    <div class="form-row">
-      <input class="hl-input" id="alarmLabel" placeholder="MISSION LABEL">
-      <input class="hl-input" id="alarmTime" type="datetime-local">
-    </div>
-    <button class="hl-btn primary" onclick="addAlarm()">+ ARM ALARM</button>
-    <div style="margin-top:24px">
-      <div class="sec-label">ARMED ALARMS</div>
-      <div id="alarmList"></div>
-    </div>
-  </div>
-
-  <!-- PROFILE PAGE -->
-  <div class="page" id="page-profile">
-    <div class="sec-label">OPERATIVE PROFILE</div>
-    <div id="profilePhotoWrap">
-      <div class="profile-photo-placeholder" onclick="document.getElementById('photoInput').click()">📷</div>
-      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-      <p style="text-align:center;font-size:9px;color:var(--muted);margin-bottom:16px">TAP TO SET PHOTO</p>
-    </div>
-    <div class="form-row">
-      <div class="profile-field">
-        <div class="profile-label">OPERATIVE NAME</div>
-        <input class="hl-input" id="pName" placeholder="FULL NAME" oninput="saveProfile()">
-      </div>
-      <div class="profile-field">
-        <div class="profile-label">CODE NAME</div>
-        <input class="hl-input" id="pCodename" placeholder="EG. THE ACCOUNTANT" oninput="saveProfile()">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="profile-field">
-        <div class="profile-label">CONTACT</div>
-        <input class="hl-input" id="pPhone" placeholder="PHONE" oninput="saveProfile()">
-      </div>
-      <div class="profile-field">
-        <div class="profile-label">EMAIL</div>
-        <input class="hl-input" id="pEmail" placeholder="EMAIL" oninput="saveProfile()">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="profile-field">
-        <div class="profile-label">LOCATION</div>
-        <input class="hl-input" id="pLocation" placeholder="CITY, STATE" oninput="saveProfile()">
-      </div>
-      <div class="profile-field">
-        <div class="profile-label">TARGET ROLE</div>
-        <input class="hl-input" id="pTargetRole" placeholder="DESIRED ROLE" oninput="saveProfile()">
-      </div>
-    </div>
-    <div class="profile-field" style="margin-bottom:10px">
-      <div class="profile-label">EDUCATION</div>
-      <input class="hl-input" id="pEdu" placeholder="EG. B.COM — FIRST DIVISION" oninput="saveProfile()">
-    </div>
-    <div class="profile-field" style="margin-bottom:10px">
-      <div class="profile-label">ARMED WITH (SKILLS)</div>
-      <input class="hl-input" id="pSkills" placeholder="EG. TALLY PRIME, SAP, MS EXCEL" oninput="saveProfile()">
-    </div>
-    <div class="profile-field" style="margin-bottom:10px">
-      <div class="profile-label">CERTIFICATIONS</div>
-      <input class="hl-input" id="pCerts" placeholder="EG. MCKINSEY FORWARD, NISM, TCS ION" oninput="saveProfile()">
-    </div>
-    <div class="profile-field" style="margin-bottom:10px">
-      <div class="profile-label">REWARD (EXPECTED SALARY)</div>
-      <input class="hl-input" id="pSalary" placeholder="EG. 3-5 LPA" oninput="saveProfile()">
-    </div>
-    <div class="profile-field" style="margin-bottom:16px">
-      <div class="profile-label">LINKEDIN</div>
-      <input class="hl-input" id="pLinkedin" placeholder="LINKEDIN URL" oninput="saveProfile()">
-    </div>
-    <button class="hl-btn primary" onclick="saveProfile();showToast('PROFILE UPDATED')">SAVE PROFILE</button>
-  </div>
-
-  <!-- WANTED POSTER PAGE -->
-  <div class="page" id="page-poster">
-    <div class="sec-label">WANTED POSTER</div>
-    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap">
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showDeadOrAlive" checked onchange="renderPoster()"> DEAD OR ALIVE
-      </label>
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showSkills" checked onchange="renderPoster()"> SKILLS
-      </label>
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showCerts" checked onchange="renderPoster()"> CERTS
-      </label>
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showEdu" checked onchange="renderPoster()"> EDUCATION
-      </label>
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showContact" checked onchange="renderPoster()"> CONTACT
-      </label>
-      <label style="font-size:9px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">
-        <input type="checkbox" id="showQR" checked onchange="renderPoster()"> QR CODE
-      </label>
-    </div>
-    <div id="posterContainer"></div>
-    <div style="margin-top:16px;display:flex;gap:8px">
-      <button class="hl-btn" onclick="downloadPoster()">DOWNLOAD POSTER</button>
-      <button class="hl-btn primary" onclick="sharePoster()">SHARE / QR LINK</button>
-    </div>
-    <div id="qrShareInfo" style="margin-top:12px;font-size:10px;color:var(--muted);display:none"></div>
-  </div>
-
-  <!-- SETTINGS PAGE -->
-  <div class="page" id="page-settings">
-    <div class="sec-label">SETTINGS</div>
-    <div class="mini-card" style="margin-bottom:12px">
-      <div class="mini-title">SECURITY</div>
-      <div style="margin-bottom:12px">
-        <div class="profile-label">CHANGE PIN</div>
+      <!-- PAGE 0: TARGETS -->
+      <div class="page" id="page0">
+        <div class="sec-label">ADD TARGET</div>
         <div class="form-row">
-          <input class="hl-input" id="newPin" type="password" placeholder="NEW 4-DIGIT PIN" maxlength="4">
-          <button class="hl-btn primary" onclick="changePin()" style="margin-top:0">SET PIN</button>
+          <div class="field"><div class="hl-label">COMPANY</div><input class="hl-input" id="inCompany" placeholder="COMPANY NAME"></div>
+          <div class="field"><div class="hl-label">ROLE</div><input class="hl-input" id="inRole" placeholder="POSITION"></div>
+        </div>
+        <div class="form-row triple">
+          <div class="field"><div class="hl-label">DATE</div><input class="hl-input" id="inDate" type="date"></div>
+          <div class="field"><div class="hl-label">STATUS</div>
+            <select class="hl-input" id="inStatus">
+              <option value="applied">APPLIED</option>
+              <option value="interview">INTERVIEW</option>
+              <option value="pending">PENDING</option>
+              <option value="selected">SELECTED</option>
+              <option value="rejected">REJECTED</option>
+            </select>
+          </div>
+          <div class="field"><div class="hl-label">LOCATION</div><input class="hl-input" id="inLoc" placeholder="CITY"></div>
+        </div>
+        <div class="field"><div class="hl-label">NOTES</div><input class="hl-input" id="inNotes" placeholder="INTEL..."></div>
+        <button class="hl-btn primary" onclick="addTarget()">+ LOCK TARGET</button>
+        <div style="margin-top:20px">
+          <div class="sec-label">TARGETS</div>
+          <div id="targetList"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="s1">0</div><div class="stat-lbl">APPLIED</div></div>
+          <div class="stat-card"><div class="stat-num" id="s2" style="color:#5577ff">0</div><div class="stat-lbl">INTERVIEWS</div></div>
+          <div class="stat-card"><div class="stat-num" id="s3" style="color:#2aaa2a">0</div><div class="stat-lbl">SELECTED</div></div>
+          <div class="stat-card"><div class="stat-num" id="s4" style="color:#555">0</div><div class="stat-lbl">REJECTED</div></div>
         </div>
       </div>
-    </div>
-    <div class="mini-card" style="margin-bottom:12px">
-      <div class="mini-title">VOICE SYSTEM</div>
-      <label style="font-size:10px;letter-spacing:2px;color:var(--muted);display:flex;align-items:center;gap:10px;cursor:pointer">
-        <input type="checkbox" id="voiceToggle" checked onchange="saveSettings()"> VOICE ENABLED
-      </label>
-    </div>
-    <div class="mini-card" style="margin-bottom:12px">
-      <div class="mini-title">DATA</div>
-      <button class="hl-btn" onclick="exportData()">EXPORT DATA</button>
-      <button class="hl-btn" onclick="if(confirm('CLEAR ALL DATA?')){clearData()}" style="margin-top:8px;color:#555;border-color:#222">CLEAR ALL DATA</button>
-    </div>
-    <div class="mini-card">
-      <div class="mini-title">ABOUT</div>
-      <div style="font-size:10px;color:var(--muted);letter-spacing:1px;line-height:1.8">
-        HITLIST v1.0<br>
-        CLASSIFIED JOB TRACKER<br>
-        DATA: LOCAL DEVICE ONLY<br>
-        BY: HITLIST-BOSS
+
+      <!-- PAGE 1: ALARMS -->
+      <div class="page" id="page1">
+        <div class="sec-label">ARM ALARM</div>
+        <div class="field"><div class="hl-label">MISSION LABEL</div><input class="hl-input" id="alarmLabel" placeholder="LABEL"></div>
+        <div class="field"><div class="hl-label">DATE & TIME</div><input class="hl-input" id="alarmTime" type="datetime-local"></div>
+        <button class="hl-btn primary" onclick="addAlarm()">+ ARM ALARM</button>
+        <div style="margin-top:20px">
+          <div class="sec-label">ARMED ALARMS</div>
+          <div id="alarmList"></div>
+        </div>
       </div>
+
+      <!-- PAGE 2: PROFILE -->
+      <div class="page" id="page2">
+        <div class="sec-label">OPERATIVE PROFILE</div>
+        <div id="profilePhotoWrap" style="text-align:center;margin-bottom:16px">
+          <div class="pm-photo-ph" style="margin:0 auto 8px" onclick="document.getElementById('photoInput').click()">📷</div>
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+          <div style="font-size:8px;letter-spacing:2px;color:var(--muted)">TAP TO SET PHOTO</div>
+        </div>
+        <div class="form-row">
+          <div class="field"><div class="hl-label">FULL NAME</div><input class="hl-input" id="pName" placeholder="NAME" oninput="saveProfile()"></div>
+          <div class="field"><div class="hl-label">CODE NAME</div><input class="hl-input" id="pCodename" placeholder="THE ACCOUNTANT" oninput="saveProfile()"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><div class="hl-label">PHONE</div><input class="hl-input" id="pPhone" placeholder="+91 XXXXXXXXXX" oninput="saveProfile()"></div>
+          <div class="field"><div class="hl-label">EMAIL</div><input class="hl-input" id="pEmail" placeholder="EMAIL" oninput="saveProfile()"></div>
+        </div>
+
+        <div class="field"><div class="hl-label">ADDRESS LINE 1 (HOUSE / FLAT NO)</div><input class="hl-input" id="pAddr1" placeholder="HOUSE NO, STREET" oninput="saveProfile()"></div>
+        <div class="field"><div class="hl-label">ADDRESS LINE 2 (TOWN / AREA)</div><input class="hl-input" id="pAddr2" placeholder="TOWN, AREA, LOCALITY" oninput="saveProfile()"></div>
+        <div class="form-row triple">
+          <div class="field"><div class="hl-label">PINCODE</div><input class="hl-input" id="pPin" placeholder="PINCODE" oninput="saveProfile()"></div>
+          <div class="field" style="grid-column:span 2">
+            <div class="hl-label">COUNTRY</div>
+            <div class="search-dropdown">
+              <input class="hl-input" id="pCountrySearch" placeholder="SEARCH COUNTRY..." oninput="filterCountry()" onfocus="showCountryDrop()" autocomplete="off">
+              <div class="search-results" id="countryDrop"></div>
+            </div>
+            <input type="hidden" id="pCountry">
+          </div>
+        </div>
+        <div class="field" id="stateField" style="display:none">
+          <div class="hl-label">STATE</div>
+          <div class="search-dropdown">
+            <input class="hl-input" id="pStateSearch" placeholder="SEARCH STATE..." oninput="filterState()" onfocus="showStateDrop()" autocomplete="off">
+            <div class="search-results" id="stateDrop"></div>
+          </div>
+          <input type="hidden" id="pState">
+        </div>
+
+        <div class="field"><div class="hl-label">TARGET ROLE</div><input class="hl-input" id="pTargetRole" placeholder="DESIRED ROLE" oninput="saveProfile()"></div>
+        <div class="field"><div class="hl-label">ARMED WITH (SKILLS)</div><input class="hl-input" id="pSkills" placeholder="TALLY PRIME, SAP, MS EXCEL..." oninput="saveProfile()"></div>
+        <div class="field"><div class="hl-label">REWARD (EXPECTED SALARY)</div><input class="hl-input" id="pSalary" placeholder="3-5 LPA" oninput="saveProfile()"></div>
+
+        <div style="margin-top:8px">
+          <div class="hl-label" style="margin-bottom:8px">EDUCATION</div>
+          <div id="eduList"></div>
+          <button class="add-more-btn" onclick="addEduField()" id="addEduBtn">+ ADD EDUCATION</button>
+        </div>
+
+        <div class="field" style="margin-top:10px"><div class="hl-label">CERTIFICATIONS</div><input class="hl-input" id="pCerts" placeholder="YOUR CERTIFICATIONS..." oninput="saveProfile()"></div>
+        <div class="field"><div class="hl-label">LINKEDIN URL</div><input class="hl-input" id="pLinkedin" placeholder="LINKEDIN PROFILE URL" oninput="saveProfile()"></div>
+        <button class="hl-btn primary" style="margin-top:8px" onclick="saveProfile();showToast('PROFILE SAVED')">SAVE PROFILE</button>
+      </div>
+
+      <!-- PAGE 3: SETTINGS -->
+      <div class="page" id="page3">
+        <div class="sec-label">SETTINGS</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
+          <div class="hl-label" style="margin-bottom:10px">CHANGE PIN</div>
+          <div class="field"><div class="hl-label">CURRENT PIN</div><input class="hl-input" id="oldPin" type="password" placeholder="CURRENT PIN" maxlength="4"></div>
+          <div class="field"><div class="hl-label">NEW PIN</div><input class="hl-input" id="newPin" type="password" placeholder="NEW 4-DIGIT PIN" maxlength="4"></div>
+          <button class="hl-btn primary" onclick="changePin()">UPDATE PIN</button>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
+          <div class="hl-label" style="margin-bottom:10px">VOICE SYSTEM</div>
+          <label style="font-size:11px;letter-spacing:2px;color:var(--text2);display:flex;align-items:center;gap:10px;cursor:pointer">
+            <input type="checkbox" id="voiceToggle" checked onchange="saveSettings()"> VOICE ENABLED
+          </label>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
+          <div class="hl-label" style="margin-bottom:10px">DATA</div>
+          <button class="hl-btn" onclick="exportData()">EXPORT BACKUP</button>
+          <button class="hl-btn danger" onclick="if(confirm('CLEAR ALL DATA? THIS CANNOT BE UNDONE.'))clearData()" style="margin-top:8px">CLEAR ALL DATA</button>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px">
+          <div class="hl-label" style="margin-bottom:8px">ABOUT HITLIST</div>
+          <div style="font-size:10px;color:var(--text2);letter-spacing:1px;line-height:2">
+            VERSION 2.0<br>CLASSIFIED JOB TRACKER<br>DATA: LOCAL DEVICE ONLY<br>BY: HITLIST-BOSS
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="bn-tab active" onclick="goPage(0,this)" id="tab0">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg>
+      <span>TARGETS</span>
+    </div>
+    <div class="bn-tab" onclick="goPage(1,this)" id="tab1">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>ALARMS</span>
+    </div>
+    <div class="bn-tab" onclick="goPage(2,this)" id="tab2">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>PROFILE</span>
+    </div>
+    <div class="bn-tab" onclick="goPage(3,this)" id="tab3">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>SETTINGS</span>
     </div>
   </div>
 </div>
 
-<!-- TARGET DETAIL MODAL -->
+<!-- TARGET MODAL -->
 <div class="modal-bg" id="targetModal">
   <div class="modal">
     <div class="modal-title">TARGET INTEL <button class="modal-close" onclick="closeModal()">✕</button></div>
@@ -440,464 +434,467 @@ select.hl-input option{background:#111}
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-// ========== DATA ==========
-let data = {
-  targets: [],
-  alarms: [],
-  profile: {},
-  settings: { pin: '1234', voice: true },
-  photo: null
-};
+// ===== DATA =====
+let data={targets:[],alarms:[],profile:{},edu:[],settings:{pin:'1234',voice:true},photo:null};
 
-function save() {
-  try {
-    const d = {...data};
-    d.photo = data.photo;
-    localStorage.setItem('hitlist_data', JSON.stringify(d));
-  } catch(e) {}
+function save(){try{localStorage.setItem('hl2',JSON.stringify(data));}catch(e){}}
+function load(){try{const s=localStorage.getItem('hl2');if(s)data=JSON.parse(s);if(!data.edu)data.edu=[];}catch(e){}}
+
+// ===== AUDIO =====
+function playBeep(freq=440,dur=0.3,type='square'){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0.3,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
 }
 
-function load() {
-  try {
-    const s = localStorage.getItem('hitlist_data');
-    if (s) data = JSON.parse(s);
-  } catch(e) {}
+function playAlarmSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [0,0.3,0.6,0.9].forEach(t=>{
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(880,ctx.currentTime+t);
+      o.frequency.exponentialRampToValueAtTime(440,ctx.currentTime+t+0.25);
+      g.gain.setValueAtTime(0.4,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.25);
+      o.start(ctx.currentTime+t);
+      o.stop(ctx.currentTime+t+0.25);
+    });
+  }catch(e){}
 }
 
-// ========== VOICE ==========
-function speak(text) {
-  if (!data.settings.voice) return;
-  if (!window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.8;
-  u.pitch = 0.6;
-  u.volume = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const deep = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google UK English Male'));
-  if (deep) u.voice = deep;
+function playProfileSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const seq=[
+      {f:200,t:0,d:0.1},{f:150,t:0.08,d:0.1},
+      {f:100,t:0.16,d:0.15},{f:80,t:0.28,d:0.4}
+    ];
+    seq.forEach(({f,t,d})=>{
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sawtooth';o.frequency.value=f;
+      g.gain.setValueAtTime(0.5,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+d);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+d);
+    });
+  }catch(e){}
+}
+
+function playPageSound(page){
+  const freqs=[[660,0.15],[440,0.15],[550,0.15],[380,0.15]];
+  const[f,d]=freqs[page]||[440,0.15];
+  playBeep(f,d,'sine');
+}
+
+// ===== VOICE =====
+function speak(text){
+  if(!data.settings.voice)return;
+  if(!window.speechSynthesis)return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=0.75;u.pitch=0.5;u.volume=1;
+  const voices=window.speechSynthesis.getVoices();
+  const deep=voices.find(v=>v.name.includes('Male')||v.name.includes('David')||v.name.includes('UK English Male'));
+  if(deep)u.voice=deep;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
 
-// ========== PIN ==========
-let pinBuffer = '';
-let pinMode = 'check';
-
-function pinPress(k) {
-  if (k === 'clr') { pinBuffer = ''; updateDots(); return; }
-  if (k === 'ok') { checkPin(); return; }
-  if (pinBuffer.length < 4) { pinBuffer += k; updateDots(); }
-  if (pinBuffer.length === 4) setTimeout(checkPin, 100);
+// ===== PIN =====
+let pinBuf='';
+function pinPress(k){
+  if(k==='clr'){pinBuf='';updateDots();return;}
+  if(k==='ok'){checkPin();return;}
+  if(pinBuf.length<4){pinBuf+=k;updateDots();}
+  if(pinBuf.length===4)setTimeout(checkPin,100);
 }
-
-function updateDots() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('d' + i).classList.toggle('filled', i < pinBuffer.length);
-  }
-}
-
-function checkPin() {
-  if (pinBuffer === data.settings.pin) {
+function updateDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pinBuf.length);}
+function checkPin(){
+  if(pinBuf===data.settings.pin){
     document.getElementById('pinscreen').classList.remove('show');
     document.getElementById('app').classList.add('show');
     speak('HITLIST activated. Welcome back, boss.');
     renderAll();
-  } else {
-    document.getElementById('pinError').textContent = 'WRONG CODE. TRY AGAIN.';
-    pinBuffer = '';
-    updateDots();
-    setTimeout(() => document.getElementById('pinError').textContent = '', 2000);
+  }else{
+    document.getElementById('pinError').textContent='WRONG CODE. TRY AGAIN.';
+    pinBuf='';updateDots();
+    setTimeout(()=>document.getElementById('pinError').textContent='',2000);
   }
 }
-
-function changePin() {
-  const np = document.getElementById('newPin').value.trim();
-  if (np.length !== 4 || isNaN(np)) { showToast('4 DIGIT PIN ONLY'); return; }
-  data.settings.pin = np;
-  save();
-  showToast('PIN UPDATED. STAY SHARP.');
-  speak('Access code updated.');
+function forgotPin(){
+  const ans=prompt('SECURITY CHECK: What is your full name? (as saved in profile)');
+  if(ans&&data.profile.name&&ans.trim().toLowerCase()===data.profile.name.trim().toLowerCase()){
+    const np=prompt('ENTER NEW 4-DIGIT PIN:');
+    if(np&&np.length===4&&!isNaN(np)){
+      data.settings.pin=np;save();
+      alert('PIN UPDATED. NEW PIN: '+np);
+    }else{alert('INVALID PIN FORMAT.');}
+  }else{alert('IDENTITY VERIFICATION FAILED.');}
+}
+function changePin(){
+  const op=document.getElementById('oldPin').value.trim();
+  const np=document.getElementById('newPin').value.trim();
+  if(op!==data.settings.pin){showToast('WRONG CURRENT PIN');return;}
+  if(np.length!==4||isNaN(np)){showToast('4 DIGIT PIN ONLY');return;}
+  data.settings.pin=np;save();
+  document.getElementById('oldPin').value='';
+  document.getElementById('newPin').value='';
+  showToast('PIN UPDATED');speak('Access code updated.');
 }
 
-// ========== TARGETS ==========
-function addTarget() {
-  const co = document.getElementById('inCompany').value.trim();
-  const ro = document.getElementById('inRole').value.trim();
-  if (!co) { showToast('COMPANY NAME REQUIRED'); return; }
-  const t = {
-    id: Date.now(),
-    company: co.toUpperCase(),
-    role: ro.toUpperCase(),
-    date: document.getElementById('inDate').value,
-    status: document.getElementById('inStatus').value,
-    location: document.getElementById('inLocation').value.toUpperCase(),
-    notes: document.getElementById('inNotes').value,
-    added: new Date().toISOString()
-  };
-  data.targets.unshift(t);
-  save();
-  ['inCompany','inRole','inDate','inNotes','inLocation'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('inStatus').value = 'applied';
-  renderTargets();
-  updateStats();
-  showToast('TARGET LOCKED.');
-  speak('Target locked.');
+// ===== SWIPE NAVIGATION =====
+let curPage=0;
+let touchStartX=0,touchStartY=0;
+const PAGES=4;
+
+function goPage(n,tab){
+  curPage=n;
+  document.getElementById('pagesSlider').style.transform=`translateX(-${n*25}%)`;
+  document.querySelectorAll('.bn-tab').forEach(t=>t.classList.remove('active'));
+  if(tab)tab.classList.add('active');
+  else document.getElementById('tab'+n).classList.add('active');
+  playPageSound(n);
+  const voices=['Targets page. Choose your prey.','Alarms page. Stay alert.','Profile page.','Settings page.'];
+  if(n===2)speak('Profile accessed.');
+  else speak(voices[n]||'');
 }
 
-function updateTargetStatus(id, status) {
-  const t = data.targets.find(x => x.id === id);
-  if (!t) return;
-  t.status = status;
-  save();
-  renderTargets();
-  updateStats();
-  if (status === 'rejected') { showToast('TARGET ELIMINATED.'); speak('Target eliminated.'); }
-  if (status === 'interview') { showToast('ENGAGEMENT CONFIRMED.'); speak('Engagement confirmed.'); }
-  if (status === 'selected') { showToast('MISSION COMPLETE. WELL PLAYED, BOSS.'); speak('Mission complete. Well played, boss.'); }
-}
+document.addEventListener('DOMContentLoaded',()=>{
+  const wrap=document.getElementById('pagesWrap');
+  wrap.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-touchStartX;
+    const dy=e.changedTouches[0].clientY-touchStartY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+      if(dx<0&&curPage<PAGES-1)goPage(curPage+1);
+      else if(dx>0&&curPage>0)goPage(curPage-1);
+    }
+  },{passive:true});
+});
 
-function deleteTarget(id) {
-  if (!confirm('DELETE THIS TARGET?')) return;
-  data.targets = data.targets.filter(x => x.id !== id);
-  save();
-  renderTargets();
-  updateStats();
-  showToast('TARGET REMOVED.');
-}
-
-const statusMap = {
-  applied: ['APPLIED', 'b-active'],
-  interview: ['INTERVIEW', 'b-interview'],
-  pending: ['RESULT PENDING', 'b-pending'],
-  selected: ['SELECTED', 'b-selected'],
-  rejected: ['REJECTED', 'b-rejected']
+// ===== TARGETS =====
+const statusMap={
+  applied:['APPLIED','b-applied'],
+  interview:['INTERVIEW','b-interview'],
+  pending:['PENDING','b-pending'],
+  selected:['SELECTED','b-selected'],
+  rejected:['REJECTED','b-rejected']
 };
 
-function renderTargets() {
-  const list = document.getElementById('targetList');
-  if (!data.targets.length) { list.innerHTML = '<div style="font-size:10px;color:#333;padding:20px 0">NO TARGETS ACQUIRED</div>'; return; }
-  list.innerHTML = data.targets.map((t, i) => {
-    const [sl, sc] = statusMap[t.status] || ['UNKNOWN', 'b-pending'];
-    const cls = t.status === 'rejected' ? 'eliminated' : t.status === 'selected' ? 'selected' : '';
-    return `<div class="target-card ${cls}" onclick="openModal(${t.id})">
+function addTarget(){
+  const co=document.getElementById('inCompany').value.trim();
+  if(!co){showToast('COMPANY NAME REQUIRED');return;}
+  const t={id:Date.now(),company:co.toUpperCase(),role:document.getElementById('inRole').value.toUpperCase(),
+    date:document.getElementById('inDate').value,status:document.getElementById('inStatus').value,
+    location:document.getElementById('inLoc').value.toUpperCase(),notes:document.getElementById('inNotes').value,
+    added:new Date().toISOString()};
+  data.targets.unshift(t);save();
+  ['inCompany','inRole','inDate','inNotes','inLoc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inStatus').value='applied';
+  renderTargets();updateStats();
+  showToast('TARGET LOCKED');speak('Target locked.');playBeep(660,0.2,'square');
+}
+
+function renderTargets(){
+  const list=document.getElementById('targetList');
+  if(!data.targets.length){list.innerHTML='<div style="font-size:10px;color:var(--muted);padding:20px 0;text-align:center">NO TARGETS ACQUIRED</div>';return;}
+  list.innerHTML=data.targets.map((t,i)=>{
+    const[sl,sc]=statusMap[t.status]||['UNKNOWN','b-pending'];
+    const cls=t.status==='rejected'?'eliminated':t.status==='selected'?'won':'';
+    return`<div class="target-card ${cls}" onclick="openModal(${t.id})">
       <div class="tc-num">${String(i+1).padStart(3,'0')}</div>
       <div class="tc-main">
         <div class="tc-company">${t.company}</div>
-        <div class="tc-role">${t.role}${t.location ? ' — ' + t.location : ''}</div>
+        <div class="tc-role">${t.role}${t.location?' — '+t.location:''}</div>
       </div>
-      <div class="tc-date">${t.date || ''}</div>
+      <div class="tc-date">${t.date||''}</div>
       <div class="badge ${sc}">${sl}</div>
     </div>`;
   }).join('');
-
-  // upcoming
-  const now = new Date();
-  const upcoming = data.targets.filter(t => t.date && new Date(t.date) >= now).sort((a,b) => new Date(a.date)-new Date(b.date)).slice(0,4);
-  document.getElementById('upcomingList').innerHTML = upcoming.length ? upcoming.map(t =>
-    `<div class="event-row"><div class="event-dot"></div><div class="event-text">${t.company}</div><div class="event-time">${t.date}</div></div>`
-  ).join('') : '<div style="font-size:10px;color:#333">NO UPCOMING</div>';
 }
 
-function updateStats() {
-  const total = data.targets.length;
-  const interviews = data.targets.filter(t => t.status === 'interview' || t.status === 'selected').length;
-  const active = data.targets.filter(t => !['rejected'].includes(t.status)).length;
-  document.getElementById('statApplied').textContent = total;
-  document.getElementById('statInterview').textContent = interviews;
-  document.getElementById('statActive').textContent = active;
-
-  const rej = data.targets.filter(t => t.status === 'rejected').length;
-  const sel = data.targets.filter(t => t.status === 'selected').length;
-  document.getElementById('statsList').innerHTML = `
-    <div class="event-row"><div class="event-dot"></div><div class="event-text">APPLIED</div><div class="event-time">${total}</div></div>
-    <div class="event-row"><div class="event-dot" style="background:#5577ff"></div><div class="event-text">INTERVIEWS</div><div class="event-time">${interviews}</div></div>
-    <div class="event-row"><div class="event-dot" style="background:#2a9a2a"></div><div class="event-text">SELECTED</div><div class="event-time">${sel}</div></div>
-    <div class="event-row"><div class="event-dot gray"></div><div class="event-text">ELIMINATED</div><div class="event-time">${rej}</div></div>
-  `;
+function updateStats(){
+  const tot=data.targets.length;
+  const intv=data.targets.filter(t=>t.status==='interview').length;
+  const sel=data.targets.filter(t=>t.status==='selected').length;
+  const rej=data.targets.filter(t=>t.status==='rejected').length;
+  document.getElementById('statApplied').textContent=tot;
+  document.getElementById('statInt').textContent=intv;
+  document.getElementById('statSel').textContent=sel;
+  document.getElementById('s1').textContent=tot;
+  document.getElementById('s2').textContent=intv;
+  document.getElementById('s3').textContent=sel;
+  document.getElementById('s4').textContent=rej;
 }
 
-// ========== MODAL ==========
-function openModal(id) {
-  const t = data.targets.find(x => x.id === id);
-  if (!t) return;
-  const statOpts = Object.entries(statusMap).map(([k,[l]]) =>
-    `<option value="${k}" ${t.status===k?'selected':''}>${l}</option>`).join('');
-  document.getElementById('modalContent').innerHTML = `
-    <div style="margin-bottom:16px">
-      <div class="profile-label">COMPANY</div>
-      <div style="font-size:16px;letter-spacing:2px">${t.company}</div>
-    </div>
-    <div style="margin-bottom:16px">
-      <div class="profile-label">ROLE</div>
-      <div style="font-size:13px;color:var(--muted)">${t.role}</div>
-    </div>
-    ${t.location ? `<div style="margin-bottom:16px"><div class="profile-label">LOCATION</div><div style="font-size:12px">${t.location}</div></div>` : ''}
-    ${t.date ? `<div style="margin-bottom:16px"><div class="profile-label">DATE</div><div style="font-size:12px">${t.date}</div></div>` : ''}
-    <div style="margin-bottom:16px">
-      <div class="profile-label">UPDATE STATUS</div>
-      <select class="hl-input" onchange="updateTargetStatus(${id},this.value)">${statOpts}</select>
-    </div>
-    <div style="margin-bottom:16px">
-      <div class="profile-label">INTEL / NOTES</div>
-      <textarea class="notes-area" onchange="updateNotes(${id},this.value)">${t.notes||''}</textarea>
-    </div>
-    <button class="hl-btn" onclick="deleteTarget(${id});closeModal()" style="color:#555;border-color:#222">DELETE TARGET</button>
+// ===== MODAL =====
+function openModal(id){
+  const t=data.targets.find(x=>x.id===id);if(!t)return;
+  const opts=Object.entries(statusMap).map(([k,[l]])=>`<option value="${k}" ${t.status===k?'selected':''}>${l}</option>`).join('');
+  document.getElementById('modalContent').innerHTML=`
+    <div class="field"><div class="hl-label">COMPANY</div><div style="font-size:15px;letter-spacing:2px">${t.company}</div></div>
+    <div class="field"><div class="hl-label">ROLE</div><div style="font-size:12px;color:var(--text2)">${t.role}</div></div>
+    ${t.location?`<div class="field"><div class="hl-label">LOCATION</div><div style="font-size:12px">${t.location}</div></div>`:''}
+    ${t.date?`<div class="field"><div class="hl-label">DATE</div><div style="font-size:12px">${t.date}</div></div>`:''}
+    <div class="field"><div class="hl-label">UPDATE STATUS</div><select class="hl-input" onchange="updateTargetStatus(${id},this.value)">${opts}</select></div>
+    <div class="field"><div class="hl-label">NOTES</div><textarea class="hl-input" style="resize:vertical;min-height:70px" onchange="updateNotes(${id},this.value)">${t.notes||''}</textarea></div>
+    <button class="hl-btn danger" onclick="deleteTarget(${id});closeModal()" style="margin-top:8px">DELETE TARGET</button>
   `;
   document.getElementById('targetModal').classList.add('show');
 }
-
-function updateNotes(id, val) {
-  const t = data.targets.find(x => x.id === id);
-  if (t) { t.notes = val; save(); }
+function updateTargetStatus(id,status){
+  const t=data.targets.find(x=>x.id===id);if(!t)return;
+  t.status=status;save();renderTargets();updateStats();
+  const msgs={rejected:['TARGET ELIMINATED','Target eliminated.'],interview:['ENGAGEMENT CONFIRMED','Engagement confirmed.'],selected:['MISSION COMPLETE','Mission complete. Well played, boss.']};
+  if(msgs[status]){showToast(msgs[status][0]);speak(msgs[status][1]);playBeep(status==='selected'?880:440,0.3);}
 }
+function updateNotes(id,val){const t=data.targets.find(x=>x.id===id);if(t){t.notes=val;save();}}
+function deleteTarget(id){data.targets=data.targets.filter(x=>x.id!==id);save();renderTargets();updateStats();showToast('TARGET REMOVED');}
+function closeModal(){document.getElementById('targetModal').classList.remove('show');}
 
-function closeModal() {
-  document.getElementById('targetModal').classList.remove('show');
+// ===== ALARMS =====
+function addAlarm(){
+  const label=document.getElementById('alarmLabel').value.trim();
+  const time=document.getElementById('alarmTime').value;
+  if(!label||!time){showToast('FILL ALL FIELDS');return;}
+  data.alarms.push({id:Date.now(),label:label.toUpperCase(),time,fired:false});
+  save();document.getElementById('alarmLabel').value='';document.getElementById('alarmTime').value='';
+  renderAlarms();showToast('ALARM ARMED');speak('Alarm armed. We do not miss.');playBeep(550,0.2);
 }
-
-// ========== ALARMS ==========
-function addAlarm() {
-  const label = document.getElementById('alarmLabel').value.trim();
-  const time = document.getElementById('alarmTime').value;
-  if (!label || !time) { showToast('FILL ALL ALARM FIELDS'); return; }
-  data.alarms.push({ id: Date.now(), label: label.toUpperCase(), time, fired: false });
-  save();
-  document.getElementById('alarmLabel').value = '';
-  document.getElementById('alarmTime').value = '';
-  renderAlarms();
-  showToast('ALARM ARMED.');
-  speak('Alarm armed. We do not miss.');
-}
-
-function deleteAlarm(id) {
-  data.alarms = data.alarms.filter(x => x.id !== id);
-  save();
-  renderAlarms();
-}
-
-function renderAlarms() {
-  const list = document.getElementById('alarmList');
-  if (!data.alarms.length) { list.innerHTML = '<div style="font-size:10px;color:#333">NO ALARMS ARMED</div>'; return; }
-  list.innerHTML = data.alarms.map(a => {
-    const dt = new Date(a.time);
-    const past = dt < new Date();
-    return `<div class="alarm-card" style="${past?'opacity:0.4':''}">
-      <div class="alarm-icon">🔔</div>
+function deleteAlarm(id){data.alarms=data.alarms.filter(x=>x.id!==id);save();renderAlarms();}
+function renderAlarms(){
+  const list=document.getElementById('alarmList');
+  if(!data.alarms.length){list.innerHTML='<div style="font-size:10px;color:var(--muted);text-align:center;padding:20px 0">NO ALARMS ARMED</div>';return;}
+  list.innerHTML=data.alarms.map(a=>{
+    const dt=new Date(a.time);
+    const past=dt<new Date();
+    return`<div class="alarm-card" style="${past?'opacity:0.45':''}">
+      <div style="color:var(--red);font-size:18px">🔔</div>
       <div class="alarm-text">${a.label}</div>
-      <div class="alarm-time">${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-      <div class="alarm-del" onclick="deleteAlarm(${a.id})">✕</div>
+      <div class="alarm-time">${dt.toLocaleDateString()}<br>${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+      <button class="alarm-del" onclick="deleteAlarm(${a.id})">✕</button>
     </div>`;
   }).join('');
 }
-
-function checkAlarms() {
-  const now = new Date();
-  data.alarms.forEach(a => {
-    if (!a.fired && new Date(a.time) <= now) {
-      a.fired = true;
-      save();
-      showToast('🔔 ' + a.label);
-      speak('Boss. You have a mission. Move. ' + a.label);
-      if (Notification.permission === 'granted') {
-        new Notification('HITLIST ALARM', { body: a.label, icon: '' });
-      }
+function checkAlarms(){
+  const now=new Date();
+  data.alarms.forEach(a=>{
+    if(!a.fired&&new Date(a.time)<=now){
+      a.fired=true;save();
+      showToast('🔔 ALERT! '+a.label);
+      speak('Alert. Alert. Boss. You have a mission. '+a.label+'. Move now.');
+      playAlarmSound();
+      if(Notification.permission==='granted')new Notification('HITLIST ALARM',{body:a.label});
     }
   });
 }
 
-// ========== PROFILE ==========
-function saveProfile() {
-  data.profile = {
-    name: document.getElementById('pName').value,
-    codename: document.getElementById('pCodename').value,
-    phone: document.getElementById('pPhone').value,
-    email: document.getElementById('pEmail').value,
-    location: document.getElementById('pLocation').value,
-    targetRole: document.getElementById('pTargetRole').value,
-    edu: document.getElementById('pEdu').value,
-    skills: document.getElementById('pSkills').value,
-    certs: document.getElementById('pCerts').value,
-    salary: document.getElementById('pSalary').value,
-    linkedin: document.getElementById('pLinkedin').value
-  };
-  save();
-  renderPoster();
+// ===== EDUCATION =====
+let eduCount=0;
+function addEduField(val=''){
+  if(eduCount>=4){showToast('MAX 4 EDUCATION ENTRIES');return;}
+  const id='edu_'+Date.now();
+  const div=document.createElement('div');
+  div.className='edu-row';div.id=id;
+  div.innerHTML=`<input class="hl-input" placeholder="EG. B.COM — FIRST DIVISION, UNIVERSITY OF LUCKNOW" value="${val}" oninput="saveProfile()"><button class="edu-del" onclick="removeEdu('${id}')">✕</button>`;
+  document.getElementById('eduList').appendChild(div);
+  eduCount++;
+  if(eduCount>=4)document.getElementById('addEduBtn').style.display='none';
+}
+function removeEdu(id){
+  document.getElementById(id)?.remove();
+  eduCount--;
+  document.getElementById('addEduBtn').style.display='';
+  saveProfile();
+}
+function getEduValues(){
+  return Array.from(document.querySelectorAll('#eduList .hl-input')).map(i=>i.value.trim()).filter(Boolean);
 }
 
-function loadProfileFields() {
-  const p = data.profile;
-  if (!p) return;
-  const fields = ['Name','Codename','Phone','Email','Location','TargetRole','Edu','Skills','Certs','Salary','Linkedin'];
-  fields.forEach(f => {
-    const el = document.getElementById('p' + f);
-    if (el) el.value = p[f.toLowerCase()] || '';
-  });
-  if (data.photo) {
-    const wrap = document.getElementById('profilePhotoWrap');
-    wrap.innerHTML = `<img src="${data.photo}" class="profile-photo" onclick="document.getElementById('photoInput').click()"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)"><p style="text-align:center;font-size:9px;color:var(--muted);margin-bottom:16px">TAP TO CHANGE PHOTO</p>`;
+// ===== COUNTRIES & STATES =====
+const COUNTRIES=['Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Chad','Chile','China','Colombia','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominican Republic','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Guatemala','Guinea','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Mauritania','Mauritius','Mexico','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan','Palestine','Panama','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saudi Arabia','Senegal','Serbia','Sierra Leone','Singapore','Slovakia','Slovenia','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'];
+
+const STATES_IN=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Chandigarh','Puducherry'];
+
+let countryDropOpen=false,stateDropOpen=false;
+
+function filterCountry(){
+  const q=document.getElementById('pCountrySearch').value.toLowerCase();
+  const res=COUNTRIES.filter(c=>c.toLowerCase().includes(q));
+  const drop=document.getElementById('countryDrop');
+  drop.innerHTML=res.map(c=>`<div class="search-item" onclick="selectCountry('${c}')">${c}</div>`).join('');
+  drop.classList.add('show');
+}
+function showCountryDrop(){
+  filterCountry();
+  document.getElementById('countryDrop').classList.add('show');
+}
+function selectCountry(c){
+  document.getElementById('pCountry').value=c;
+  document.getElementById('pCountrySearch').value=c;
+  document.getElementById('countryDrop').classList.remove('show');
+  if(c==='India'){
+    document.getElementById('stateField').style.display='';
+  }else{
+    document.getElementById('stateField').style.display='none';
+    document.getElementById('pState').value='';
+    document.getElementById('pStateSearch').value='';
+  }
+  saveProfile();
+}
+function filterState(){
+  const q=document.getElementById('pStateSearch').value.toLowerCase();
+  const res=STATES_IN.filter(s=>s.toLowerCase().includes(q));
+  const drop=document.getElementById('stateDrop');
+  drop.innerHTML=res.map(s=>`<div class="search-item" onclick="selectState('${s}')">${s}</div>`).join('');
+  drop.classList.add('show');
+}
+function showStateDrop(){filterState();document.getElementById('stateDrop').classList.add('show');}
+function selectState(s){
+  document.getElementById('pState').value=s;
+  document.getElementById('pStateSearch').value=s;
+  document.getElementById('stateDrop').classList.remove('show');
+  saveProfile();
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-dropdown')){
+    document.querySelectorAll('.search-results').forEach(d=>d.classList.remove('show'));
+  }
+});
+
+// ===== PROFILE =====
+function saveProfile(){
+  data.profile={
+    name:document.getElementById('pName').value,
+    codename:document.getElementById('pCodename').value,
+    phone:document.getElementById('pPhone').value,
+    email:document.getElementById('pEmail').value,
+    addr1:document.getElementById('pAddr1').value,
+    addr2:document.getElementById('pAddr2').value,
+    pincode:document.getElementById('pPin').value,
+    country:document.getElementById('pCountry').value,
+    state:document.getElementById('pState').value,
+    targetRole:document.getElementById('pTargetRole').value,
+    skills:document.getElementById('pSkills').value,
+    certs:document.getElementById('pCerts').value,
+    salary:document.getElementById('pSalary').value,
+    linkedin:document.getElementById('pLinkedin').value
+  };
+  data.edu=getEduValues();
+  save();
+}
+function loadProfileFields(){
+  const p=data.profile||{};
+  const fields={pName:'name',pCodename:'codename',pPhone:'phone',pEmail:'email',pAddr1:'addr1',pAddr2:'addr2',pPin:'pincode',pTargetRole:'targetRole',pSkills:'skills',pCerts:'certs',pSalary:'salary',pLinkedin:'linkedin'};
+  Object.entries(fields).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=p[key]||'';});
+  if(p.country){document.getElementById('pCountrySearch').value=p.country;document.getElementById('pCountry').value=p.country;if(p.country==='India')document.getElementById('stateField').style.display='';}
+  if(p.state){document.getElementById('pStateSearch').value=p.state;document.getElementById('pState').value=p.state;}
+  document.getElementById('eduList').innerHTML='';eduCount=0;
+  (data.edu||[]).forEach(v=>addEduField(v));
+  if(data.photo){
+    document.getElementById('profilePhotoWrap').innerHTML=`<img src="${data.photo}" class="pm-photo" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--red);display:block;margin:0 auto 8px;object-fit:cover" onclick="document.getElementById('photoInput').click()"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)"><div style="font-size:8px;letter-spacing:2px;color:var(--muted);text-align:center">TAP TO CHANGE</div>`;
   }
 }
-
-function loadPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    data.photo = e.target.result;
-    save();
-    loadProfileFields();
-    renderPoster();
-  };
+function loadPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{data.photo=e.target.result;save();loadProfileFields();};
   reader.readAsDataURL(file);
 }
 
-// ========== POSTER ==========
-function renderPoster() {
-  const p = data.profile || {};
-  const showDOA = document.getElementById('showDeadOrAlive')?.checked;
-  const showSkills = document.getElementById('showSkills')?.checked;
-  const showCerts = document.getElementById('showCerts')?.checked;
-  const showEdu = document.getElementById('showEdu')?.checked;
-  const showContact = document.getElementById('showContact')?.checked;
-  const showQR = document.getElementById('showQR')?.checked;
-
-  const photoHtml = data.photo
-    ? `<img src="${data.photo}" class="poster-photo">`
-    : `<div class="poster-photo-ph">👤</div>`;
-
-  const lastSeen = data.targets.length > 0 ? data.targets[0].company : 'UNKNOWN LOCATION';
-
-  let html = `<div class="poster-wrap" id="wantedPoster">
-    <div class="poster-wanted">WANTED</div>
-    ${showDOA ? '<div class="poster-dead">DEAD OR ALIVE (PREFERABLY EMPLOYED)</div>' : ''}
+// ===== PROFILE POPUP =====
+function openProfilePopup(){
+  playProfileSound();
+  const p=data.profile||{};
+  const photoHtml=data.photo?`<img src="${data.photo}" class="pm-photo">`:`<div class="pm-photo-ph">👤</div>`;
+  document.getElementById('pmContent').innerHTML=`
     ${photoHtml}
-    <div class="poster-name">${(p.name || 'OPERATIVE NAME').toUpperCase()}</div>
-    ${p.codename ? `<div class="poster-detail" style="text-align:center;font-style:italic;margin-bottom:8px">"${p.codename.toUpperCase()}"</div>` : ''}
-    ${showEdu ? `<div class="poster-detail">🎓 EDUCATION: ${(p.edu || 'N/A').toUpperCase()}</div>` : ''}
-    ${showSkills ? `<div class="poster-detail">⚔️ ARMED WITH: ${(p.skills || 'N/A').toUpperCase()}</div>` : ''}
-    ${showCerts ? `<div class="poster-detail">📜 CERTIFIED: ${(p.certs || 'N/A').toUpperCase()}</div>` : ''}
-    <div class="poster-detail">📍 LAST SEEN: APPLYING AT ${lastSeen.toUpperCase()}</div>
-    ${p.location ? `<div class="poster-detail">🗺️ ORIGIN: ${p.location.toUpperCase()}</div>` : ''}
-    ${showContact ? `
-      ${p.phone ? `<div class="poster-detail">📞 ${p.phone}</div>` : ''}
-      ${p.email ? `<div class="poster-detail">✉️ ${p.email}</div>` : ''}
-    ` : ''}
-    <div class="poster-reward">💰 REWARD: ${(p.salary || 'FULL-TIME EMPLOYMENT').toUpperCase()}</div>
-    ${showQR ? `<div id="posterQR" style="margin:12px auto 0;width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#e8d5a0"></div>` : ''}
-    <div class="poster-footer">HITLIST — CLASSIFIED TRACKER — ${new Date().getFullYear()}</div>
-  </div>`;
-
-  document.getElementById('posterContainer').innerHTML = html;
-
-  if (showQR) {
-    try {
-      const qrUrl = p.linkedin || window.location.href;
-      new QRCode(document.getElementById('posterQR'), { text: qrUrl, width: 80, height: 80, colorDark:'#1a0a00', colorLight:'#e8d5a0' });
-    } catch(e) {}
-  }
+    <div class="pm-name">${(p.name||'OPERATIVE').toUpperCase()}</div>
+    <div class="pm-role">${(p.codename||'HITLIST AGENT').toUpperCase()}</div>
+    <div class="pm-divider"></div>
+    ${p.targetRole?`<div class="pm-detail">🎯 TARGET: ${p.targetRole.toUpperCase()}</div>`:''}
+    ${p.skills?`<div class="pm-detail">⚔️ ARMED: ${p.skills.toUpperCase()}</div>`:''}
+    ${p.salary?`<div class="pm-detail">💰 REWARD: ${p.salary.toUpperCase()}</div>`:''}
+    ${data.edu&&data.edu.length?`<div class="pm-detail">🎓 EDU: ${data.edu[0].toUpperCase()}</div>`:''}
+    <div class="pm-divider"></div>
+    <div class="pm-qr-label">SCAN TO VIEW PROFILE</div>
+    <div id="pmQR" style="width:120px;height:120px;margin:0 auto;background:#fff;padding:6px;border-radius:4px"></div>
+  `;
+  document.getElementById('profilePopup').classList.add('show');
+  try{
+    const qrUrl=p.linkedin||window.location.href;
+    setTimeout(()=>{
+      try{new QRCode(document.getElementById('pmQR'),{text:qrUrl,width:108,height:108,colorDark:'#000',colorLight:'#fff'});}catch(e){}
+    },100);
+  }catch(e){}
 }
+function closeProfilePopup(){document.getElementById('profilePopup').classList.remove('show');}
 
-function downloadPoster() {
-  showToast('USE BROWSER PRINT > SAVE AS PDF');
-  speak('Download initiated.');
-  window.print();
-}
-
-function sharePoster() {
-  const p = data.profile || {};
-  const url = p.linkedin || window.location.href;
-  if (navigator.share) {
-    navigator.share({ title: 'HITLIST — ' + (p.name || 'OPERATIVE'), text: 'WANTED: ' + (p.name || 'OPERATIVE'), url });
-  } else {
-    navigator.clipboard.writeText(url).then(() => showToast('LINK COPIED TO CLIPBOARD'));
-  }
-}
-
-// ========== SETTINGS ==========
-function saveSettings() {
-  data.settings.voice = document.getElementById('voiceToggle').checked;
-  save();
-}
-
-function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'hitlist_backup.json';
-  a.click();
+// ===== SETTINGS =====
+function saveSettings(){data.settings.voice=document.getElementById('voiceToggle').checked;save();}
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hitlist_backup.json';a.click();
   showToast('DATA EXPORTED');
 }
+function clearData(){localStorage.removeItem('hl2');location.reload();}
 
-function clearData() {
-  localStorage.removeItem('hitlist_data');
-  location.reload();
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ========== UI HELPERS ==========
-function showPage(page, tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  tab.classList.add('active');
-  if (page === 'poster') renderPoster();
-  if (page === 'profile') loadProfileFields();
+// ===== RENDER ALL =====
+function renderAll(){
+  renderTargets();updateStats();renderAlarms();loadProfileFields();
+  document.getElementById('voiceToggle').checked=data.settings.voice!==false;
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function renderAll() {
-  renderTargets();
-  updateStats();
-  renderAlarms();
-  loadProfileFields();
-  document.getElementById('voiceToggle').checked = data.settings.voice !== false;
-}
-
-// ========== INIT ==========
-window.addEventListener('load', () => {
+// ===== INIT =====
+window.addEventListener('load',()=>{
   load();
-  window.speechSynthesis.onvoiceschanged = () => {};
-
-  const splashMsgs = ['INITIALIZING SYSTEM...','LOADING CLASSIFIED DATA...','ARMING SYSTEMS...','ACCESS GRANTED'];
-  let mi = 0;
-  const si = setInterval(() => {
+  window.speechSynthesis&&window.speechSynthesis.getVoices();
+  const msgs=['INITIALIZING...','LOADING INTEL...','ARMING SYSTEMS...','ACCESS GRANTED'];
+  let mi=0;
+  const si=setInterval(()=>{
     mi++;
-    if (mi < splashMsgs.length) {
-      document.getElementById('splashMsg').textContent = splashMsgs[mi];
-    } else {
+    if(mi<msgs.length)document.getElementById('splashMsg').textContent=msgs[mi];
+    else{
       clearInterval(si);
-      setTimeout(() => {
+      setTimeout(()=>{
         document.getElementById('splash').classList.add('hide');
-        setTimeout(() => {
-          document.getElementById('splash').style.display = 'none';
+        setTimeout(()=>{
+          document.getElementById('splash').style.display='none';
           document.getElementById('pinscreen').classList.add('show');
-        }, 800);
-      }, 600);
+        },800);
+      },500);
     }
-  }, 700);
-
-  setInterval(checkAlarms, 30000);
+  },700);
+  setInterval(checkAlarms,30000);
   Notification.requestPermission();
 });
 
-window.addEventListener('beforeunload', () => {
-  speak('Going dark. Stay sharp, boss.');
-});
+window.addEventListener('beforeunload',()=>speak('Going dark. Stay sharp, boss.'));
+document.getElementById('targetModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('profilePopup').addEventListener('click',function(e){if(e.target===this)closeProfilePopup();});
 
-document.getElementById('targetModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}</script>
 </body>
 </html>
