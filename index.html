@@ -5,190 +5,254 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>HITLIST</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --red:#ff2a2a;
-  --bg:#0a0a0a;
-  --bg2:#141414;
-  --bg3:#1e1e1e;
-  --border:#2a2a2a;
-  --text:#ffffff;
-  --text2:#cccccc;
-  --muted:#888888;
-  --mono:'Share Tech Mono',monospace;
-  --display:'Oswald',sans-serif;
+  --red:#ff2a2a;--bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;
+  --border:#2a2a2a;--text:#ffffff;--text2:#cccccc;--muted:#888;
+  --mono:'Share Tech Mono',monospace;--display:'Oswald',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden;overscroll-behavior:none}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden}
 
-/* SPLASH */
+/* ===== SPLASH ===== */
 #splash{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.8s}
 #splash.hide{opacity:0;pointer-events:none}
-.splash-logo{width:90px;height:90px;animation:pulse 1s ease-in-out infinite}
-.splash-title{font-family:var(--display);font-size:52px;letter-spacing:14px;color:var(--red);margin:20px 0 8px}
-.splash-sub{font-size:10px;letter-spacing:4px;color:var(--muted)}
-.splash-loading{margin-top:40px;font-size:10px;letter-spacing:3px;color:var(--muted)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.splash-svg{width:90px;height:90px;animation:crosshairPulse 1.2s ease-in-out infinite}
+@keyframes crosshairPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.95)}}
+.splash-title{font-family:'Cinzel',serif;font-size:48px;letter-spacing:12px;color:var(--red);margin:18px 0 6px;text-shadow:0 0 30px #ff2a2a44}
+.splash-sub{font-size:9px;letter-spacing:5px;color:var(--muted)}
+.splash-msg{margin-top:36px;font-size:10px;letter-spacing:3px;color:var(--muted)}
 
-/* PIN */
-#pinscreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999}
+/* ===== MODE SELECT ===== */
+#modeSelect{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:998;padding:24px}
+#modeSelect.show{display:flex}
+.ms-title{font-family:'Cinzel',serif;font-size:22px;letter-spacing:6px;color:var(--red);margin-bottom:8px;text-align:center}
+.ms-sub{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:36px;text-align:center}
+.ms-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:340px}
+.ms-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:20px;cursor:pointer;transition:all 0.25s;text-align:center}
+.ms-card:hover,.ms-card:active{border-color:var(--red);background:#1a0505}
+.ms-card-icon{font-size:32px;margin-bottom:8px}
+.ms-card-title{font-family:var(--display);font-size:18px;letter-spacing:4px;color:var(--text);margin-bottom:4px}
+.ms-card-sub{font-size:9px;letter-spacing:2px;color:var(--muted)}
+
+/* ===== EXAM SELECT ===== */
+#examSelect{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:997;padding:24px}
+#examSelect.show{display:flex}
+.es-title{font-family:'Cinzel',serif;font-size:20px;letter-spacing:5px;color:var(--red);margin-bottom:6px;text-align:center}
+.es-sub{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:28px;text-align:center}
+.es-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:360px}
+.es-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px 12px;cursor:pointer;transition:all 0.25s;text-align:center}
+.es-card:hover,.es-card:active{border-color:var(--red)}
+.es-icon{font-size:26px;margin-bottom:6px}
+.es-name{font-size:11px;letter-spacing:2px;color:var(--text2)}
+
+/* ===== PIN ===== */
+#pinscreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:996}
 #pinscreen.show{display:flex}
-.pin-title{font-family:var(--display);font-size:30px;letter-spacing:10px;color:var(--red);margin-bottom:6px}
-.pin-sub{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:36px}
-.pin-dots{display:flex;gap:16px;margin-bottom:32px}
+.pin-title{font-family:'Cinzel',serif;font-size:26px;letter-spacing:8px;color:var(--red);margin-bottom:6px}
+.pin-sub{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:32px}
+.pin-dots{display:flex;gap:14px;margin-bottom:28px}
 .pin-dot{width:14px;height:14px;border-radius:50%;border:1px solid var(--muted);transition:all 0.2s}
-.pin-dot.filled{background:var(--red);border-color:var(--red)}
-.pin-pad{display:grid;grid-template-columns:repeat(3,76px);gap:12px}
-.pin-btn{width:76px;height:76px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:22px;cursor:pointer;transition:all 0.15s}
-.pin-btn:hover{border-color:var(--red);color:var(--red)}
-.pin-btn:active{transform:scale(0.93);background:var(--bg3)}
-.pin-error{color:var(--red);font-size:11px;letter-spacing:2px;margin-top:16px;min-height:20px;text-align:center}
-.pin-forgot{color:var(--muted);font-size:9px;letter-spacing:2px;margin-top:20px;cursor:pointer;text-decoration:underline}
-.pin-forgot:hover{color:var(--red)}
+.pin-dot.filled{background:var(--red);border-color:var(--red);box-shadow:0 0 8px #ff2a2a66}
+.pin-pad{display:grid;grid-template-columns:repeat(3,76px);gap:10px}
+.pin-btn{width:76px;height:76px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:22px;cursor:pointer;transition:all 0.15s;-webkit-user-select:none;user-select:none}
+.pin-btn:hover{border-color:var(--red)}
+.pin-btn:active{transform:scale(0.92);background:var(--bg3)}
+.pin-err{color:var(--red);font-size:10px;letter-spacing:2px;margin-top:14px;min-height:18px;text-align:center}
+.pin-forgot{color:var(--muted);font-size:9px;letter-spacing:2px;margin-top:16px;cursor:pointer;text-decoration:underline}
 
-/* APP */
-#app{display:none;flex-direction:column;height:100vh;overflow:hidden}
-#app.show{display:flex}
+/* ===== DESKTOP APP ===== */
+#appDesktop{display:none;flex-direction:column;min-height:100vh}
+#appDesktop.show{display:flex}
+.desk-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.desk-logo{display:flex;align-items:center;gap:10px;cursor:pointer;position:relative}
+.desk-logo-svg{width:30px;height:30px}
+.desk-brand{font-family:'Cinzel',serif;font-size:20px;letter-spacing:8px;color:var(--red)}
+.desk-sub{font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:-2px}
+.desk-stats{display:flex;gap:20px}
+.dstat{text-align:right}
+.dstat-n{font-size:20px;color:var(--red);line-height:1}
+.dstat-l{font-size:8px;letter-spacing:2px;color:var(--muted)}
+.desk-tabs{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 24px}
+.desk-tab{padding:12px 20px;font-size:9px;letter-spacing:3px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.desk-tab.active{color:var(--red);border-bottom-color:var(--red)}
+.desk-tab:hover{color:var(--text2)}
+.desk-content{padding:24px;max-width:900px;margin:0 auto;width:100%}
+.desk-page{display:none}
+.desk-page.active{display:block}
 
-/* HEADER */
-.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:100}
-.header-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
-.header-logo svg{width:28px;height:28px}
-.header-brand{font-family:var(--display);font-size:22px;letter-spacing:8px;color:var(--red)}
-.header-sub{font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:-2px}
-.header-stats{display:flex;gap:16px}
-.hstat{text-align:right}
-.hstat-n{font-size:18px;color:var(--red);line-height:1}
-.hstat-l{font-size:8px;letter-spacing:2px;color:var(--muted)}
+/* ===== MOBILE APP ===== */
+#appMobile{display:none;flex-direction:column;height:100dvh;overflow:hidden}
+#appMobile.show{display:flex}
+.mob-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mob-logo{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative}
+.mob-brand{font-family:'Cinzel',serif;font-size:17px;letter-spacing:6px;color:var(--red)}
+.mob-sub{font-size:7px;letter-spacing:2px;color:var(--muted);margin-top:-2px}
+.mob-stats{display:flex;gap:12px}
+.mob-stat-n{font-size:15px;color:var(--red);line-height:1;text-align:right}
+.mob-stat-l{font-size:7px;letter-spacing:1px;color:var(--muted)}
+.mob-pages-wrap{flex:1;overflow:hidden;position:relative}
+.mob-slider{display:flex;height:100%;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.mob-page{flex-shrink:0;overflow-y:auto;padding:14px}
+.mob-bottom{background:var(--bg2);border-top:1px solid var(--border);display:flex;flex-shrink:0}
+.mob-tab{flex:1;padding:10px 4px;text-align:center;cursor:pointer;transition:all 0.2s;border-top:2px solid transparent}
+.mob-tab.active{border-top-color:var(--red)}
+.mob-tab svg{width:18px;height:18px;display:block;margin:0 auto 2px;stroke:var(--muted);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mob-tab.active svg{stroke:var(--red)}
+.mob-tab span{font-size:7px;letter-spacing:1px;color:var(--muted)}
+.mob-tab.active span{color:var(--red)}
 
-/* SWIPE PAGES */
-.pages-wrap{flex:1;display:flex;overflow:hidden;position:relative}
-.pages-slider{display:flex;width:400%;height:100%;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
-.page{width:25%;height:100%;overflow-y:auto;padding:16px;flex-shrink:0}
+/* ===== BANNER ===== */
+.banner-wrap{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none;text-align:center;display:none}
+.banner-wrap.mob{top:40px}
+.banner-wrap.show{display:block}
+.banner-chain-l,.banner-chain-r{display:inline-block;width:3px;height:20px;background:repeating-linear-gradient(to bottom,#888 0,#888 4px,transparent 4px,transparent 7px);vertical-align:top;margin-top:-2px}
+.banner-chain-l{margin-right:-2px}.banner-chain-r{margin-left:-2px}
+.banner-sign{display:inline-block;background:#8b4513;border:3px solid #5a2d0c;padding:8px 18px;border-radius:4px;transform-origin:top center;animation:bannerSwing 1.5s ease-in-out 3}
+@keyframes bannerSwing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.banner-text{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#f5e6c8;white-space:nowrap}
+.banner-hint{font-size:8px;letter-spacing:1px;color:#c8a870;margin-top:2px}
 
-/* BOTTOM NAV */
-.bottom-nav{background:var(--bg2);border-top:1px solid var(--border);display:flex;flex-shrink:0}
-.bn-tab{flex:1;padding:12px 4px;text-align:center;cursor:pointer;transition:all 0.2s;border-top:2px solid transparent}
-.bn-tab.active{border-top-color:var(--red)}
-.bn-tab svg{width:20px;height:20px;display:block;margin:0 auto 3px;stroke:var(--muted);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.bn-tab.active svg{stroke:var(--red)}
-.bn-tab span{font-size:7px;letter-spacing:2px;color:var(--muted)}
-.bn-tab.active span{color:var(--red)}
-
-/* SECTION LABEL */
-.sec-label{font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+/* ===== SHARED COMPONENTS ===== */
+.sec-label{font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--bg3)}
-
-/* INPUTS */
+.hl-label{font-size:8px;letter-spacing:3px;color:var(--text2);margin-bottom:4px}
+.field{margin-bottom:10px}
 .hl-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;letter-spacing:1px;outline:none;transition:border 0.2s}
 .hl-input:focus{border-color:#ff2a2a66}
 .hl-input::placeholder{color:var(--muted)}
-.hl-label{font-size:8px;letter-spacing:3px;color:var(--text2);margin-bottom:4px}
-.field{margin-bottom:10px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.form-row.single{grid-template-columns:1fr}
-.form-row.triple{grid-template-columns:1fr 1fr 1fr}
 select.hl-input option{background:#111;color:#fff}
-
-/* BUTTONS */
-.hl-btn{width:100%;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:3px;padding:12px;cursor:pointer;transition:all 0.2s;margin-top:4px}
+.form-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.hl-btn{width:100%;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:3px;padding:11px;cursor:pointer;transition:all 0.2s;margin-top:4px}
 .hl-btn:hover{border-color:var(--red);color:var(--red)}
 .hl-btn.primary{border-color:var(--red);color:var(--red)}
 .hl-btn.primary:hover{background:#1a0505}
-.hl-btn.danger{border-color:#444;color:#555}
-.add-more-btn{background:none;border:1px dashed var(--border);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:8px;cursor:pointer;width:100%;margin-top:6px;transition:all 0.2s}
-.add-more-btn:hover{border-color:var(--red);color:var(--red)}
-
-/* TARGET CARDS */
-.target-card{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:3px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s}
-.target-card:hover{border-color:#333}
-.target-card.eliminated{border-left-color:#333;opacity:0.5}
-.target-card.won{border-left-color:#2a9a2a}
-.tc-num{font-size:9px;color:var(--muted);min-width:26px}
+.hl-btn.danger{border-color:#333;color:#555}
+.add-btn{background:none;border:1px dashed var(--border);border-radius:3px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:8px;cursor:pointer;width:100%;margin-top:6px;transition:all 0.2s}
+.add-btn:hover{border-color:var(--red);color:var(--red)}
+.target-card{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:3px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.2s}
+.target-card.eliminated{border-left-color:#333;opacity:0.45}
+.target-card.won{border-left-color:#2aaa2a}
+.tc-num{font-size:9px;color:var(--muted);min-width:24px}
 .tc-main{flex:1;min-width:0}
-.tc-company{font-size:13px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tc-role{font-size:10px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tc-date{font-size:9px;color:var(--muted);margin-right:6px;white-space:nowrap}
+.tc-co{font-size:13px;letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-role{font-size:10px;color:var(--text2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-date{font-size:9px;color:var(--muted);margin-right:5px;white-space:nowrap}
 .badge{font-size:8px;letter-spacing:1px;padding:3px 7px;border-radius:2px;white-space:nowrap}
 .b-applied{background:#1a0505;color:var(--red);border:1px solid #ff2a2a22}
 .b-interview{background:#0a0a1a;color:#5577ff;border:1px solid #5577ff22}
 .b-pending{background:#1a1500;color:#ddaa00;border:1px solid #ddaa0022}
 .b-selected{background:#0a1a0a;color:#2aaa2a;border:1px solid #2aaa2a22}
 .b-rejected{background:#111;color:#555;border:1px solid #222}
-
-/* ALARM */
-.alarm-card{background:var(--bg2);border:1px solid #ff2a2a22;border-radius:3px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.alarm-text{flex:1;font-size:11px;letter-spacing:1px;color:var(--text)}
+.alarm-card{background:var(--bg2);border:1px solid #ff2a2a22;border-radius:3px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:10px}
+.alarm-txt{flex:1;font-size:11px;color:var(--text)}
 .alarm-time{font-size:9px;color:var(--red);white-space:nowrap}
-.alarm-del{color:var(--muted);cursor:pointer;font-size:18px;padding:4px;transition:color 0.2s;background:none;border:none}
+.alarm-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px;transition:color 0.2s}
 .alarm-del:hover{color:var(--red)}
-
-/* EDUCATION ROW */
-.edu-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.edu-row .hl-input{flex:1}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px 6px;text-align:center}
+.stat-num{font-size:24px;color:var(--red);line-height:1}
+.stat-lbl{font-size:7px;letter-spacing:2px;color:var(--muted);margin-top:3px}
+.edu-row{display:flex;gap:8px;align-items:center;margin-bottom:7px}
 .edu-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;flex-shrink:0}
 .edu-del:hover{color:var(--red)}
-
-/* STATS GRID */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px;text-align:center}
-.stat-num{font-size:28px;color:var(--red);line-height:1}
-.stat-lbl{font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:4px}
-
-/* MODAL */
+.search-dd{position:relative}
+.drop-list{position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 3px 3px;max-height:160px;overflow-y:auto;z-index:300;display:none}
+.drop-list.show{display:block}
+.drop-item{padding:8px 12px;font-size:11px;color:var(--text2);cursor:pointer}
+.drop-item:hover{background:var(--bg2);color:var(--red)}
 .modal-bg{position:fixed;inset:0;background:#000000dd;display:none;align-items:flex-end;justify-content:center;z-index:500;padding:0}
 .modal-bg.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:20px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto}
-.modal-title{font-size:9px;letter-spacing:4px;color:var(--red);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:20px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:9px;letter-spacing:4px;color:var(--red);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
 .modal-close:hover{color:var(--red)}
-
-/* PROFILE MODAL */
-.profile-modal-bg{position:fixed;inset:0;background:#000000ee;display:none;align-items:center;justify-content:center;z-index:600;padding:20px}
-.profile-modal-bg.show{display:flex}
-.profile-modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;width:100%;max-width:360px;text-align:center}
-.pm-photo{width:80px;height:80px;border-radius:50%;border:2px solid var(--red);object-fit:cover;display:block;margin:0 auto 12px}
-.pm-photo-ph{width:80px;height:80px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:var(--bg3);color:var(--red);font-size:28px}
-.pm-name{font-family:var(--display);font-size:22px;letter-spacing:4px;color:var(--text);margin-bottom:4px}
-.pm-role{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:16px}
-.pm-detail{font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:6px;text-align:left}
-.pm-qr-label{font-size:8px;letter-spacing:3px;color:var(--muted);margin:16px 0 8px}
-.pm-close{margin-top:16px;width:100%}
-.pm-divider{height:1px;background:var(--border);margin:12px 0}
-
-/* WANTED POSTER */
-.poster-wrap{background:#f2e0b0;color:#1a0a00;padding:20px;border-radius:4px;border:6px solid #7a3b10;font-family:var(--display);position:relative;max-width:340px;margin:0 auto}
-.poster-wanted{font-size:48px;font-weight:700;letter-spacing:8px;text-align:center;color:#8b0000;line-height:1;text-shadow:2px 2px 0 #5a0000}
-.poster-dead{font-size:11px;letter-spacing:3px;text-align:center;color:#7a3b10;margin-bottom:10px;font-family:var(--mono)}
-.poster-photo{width:140px;height:140px;border:4px solid #7a3b10;object-fit:cover;display:block;margin:0 auto 10px;filter:sepia(15%)}
-.poster-photo-ph{width:140px;height:140px;border:4px solid #7a3b10;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;background:#e0c880;color:#7a3b10;font-size:44px}
-.poster-name{font-size:24px;font-weight:700;text-align:center;letter-spacing:3px;color:#1a0a00;border-top:2px solid #7a3b10;border-bottom:2px solid #7a3b10;padding:5px 0;margin-bottom:10px}
-.poster-detail{font-size:10px;letter-spacing:1px;margin-bottom:4px;color:#3a1a00;font-family:var(--mono)}
-.poster-reward{font-size:18px;font-weight:700;text-align:center;color:#8b0000;margin-top:10px;letter-spacing:2px}
-.poster-footer{font-size:7px;letter-spacing:2px;text-align:center;color:#7a3b10;margin-top:8px;font-family:var(--mono)}
-
-/* TOAST */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--red);border-radius:3px;padding:10px 20px;font-size:10px;letter-spacing:2px;color:var(--red);z-index:9000;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+.profile-popup-bg{position:fixed;inset:0;background:#000000ee;display:none;align-items:center;justify-content:center;z-index:600;padding:20px}
+.profile-popup-bg.show{display:flex}
+.profile-popup{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:22px;width:100%;max-width:340px;text-align:center}
+.pp-photo{width:76px;height:76px;border-radius:50%;border:2px solid var(--red);object-fit:cover;display:block;margin:0 auto 10px}
+.pp-photo-ph{width:76px;height:76px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;background:var(--bg3);color:var(--red);font-size:26px}
+.pp-name{font-family:'Cinzel',serif;font-size:18px;letter-spacing:3px;color:var(--text);margin-bottom:3px}
+.pp-role{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:12px}
+.pp-detail{font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:5px;text-align:left}
+.pp-divider{height:1px;background:var(--border);margin:10px 0}
+.pp-qr-lbl{font-size:8px;letter-spacing:3px;color:var(--muted);margin:12px 0 8px}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--red);border-radius:3px;padding:9px 18px;font-size:10px;letter-spacing:2px;color:var(--red);z-index:9000;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{opacity:1}
-
-/* CURSOR */
-.cursor{display:inline-block;width:8px;height:16px;background:var(--red);animation:blink 1s step-end infinite;vertical-align:middle}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--red);animation:blink 1s step-end infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* COUNTRY SEARCH */
-.search-dropdown{position:relative}
-.search-results{position:absolute;top:100%;left:0;right:0;background:var(--bg3);border:1px solid var(--border);border-top:none;border-radius:0 0 3px 3px;max-height:180px;overflow-y:auto;z-index:200;display:none}
-.search-results.show{display:block}
-.search-item{padding:8px 12px;font-size:11px;color:var(--text2);cursor:pointer;letter-spacing:1px}
-.search-item:hover{background:var(--bg2);color:var(--red)}
+/* ===== STUDENT THEMES ===== */
+.theme-ca{--accent:#ffd700;--accent2:#b8860b}
+.theme-upsc{--accent:#4a90d9;--accent2:#2c5f8a}
+.theme-eng{--accent:#00ff88;--accent2:#00aa55}
+.theme-med{--accent:#ff6b6b;--accent2:#cc3333}
+.theme-gen{--accent:#bb88ff;--accent2:#7733cc}
+.theme-law{--accent:#ff9944;--accent2:#cc6600}
 
-@media(max-width:480px){
-  .form-row{grid-template-columns:1fr}
-  .form-row.triple{grid-template-columns:1fr 1fr}
-  .stats-grid{grid-template-columns:1fr 1fr}
+/* ===== STUDENT UI ===== */
+.student-header{padding:16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.student-exam-badge{font-size:9px;letter-spacing:3px;padding:4px 10px;border-radius:20px;border:1px solid var(--accent,var(--red));color:var(--accent,var(--red))}
+.pomodoro-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:24px;text-align:center;margin-bottom:16px}
+.pomo-time{font-family:'Cinzel',serif;font-size:56px;color:var(--text);letter-spacing:4px;line-height:1}
+.pomo-label{font-size:9px;letter-spacing:4px;color:var(--muted);margin-top:6px;margin-bottom:16px}
+.pomo-btns{display:flex;gap:10px;justify-content:center}
+.pomo-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:10px 18px;cursor:pointer;transition:all 0.2s}
+.pomo-btn:hover{border-color:var(--accent,var(--red));color:var(--accent,var(--red))}
+.pomo-btn.active{border-color:var(--accent,var(--red));color:var(--accent,var(--red));background:#1a0a0a}
+.pomo-progress{height:3px;background:var(--bg3);border-radius:2px;margin-top:14px;overflow:hidden}
+.pomo-bar{height:100%;background:var(--accent,var(--red));border-radius:2px;transition:width 1s linear;width:100%}
+.clock-fullscreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:800;cursor:pointer}
+.clock-fullscreen.show{display:flex}
+.clock-time{font-family:'Cinzel',serif;font-size:clamp(48px,15vw,120px);color:var(--text);letter-spacing:6px}
+.clock-date{font-size:clamp(12px,3vw,20px);letter-spacing:4px;color:var(--muted);margin-top:10px}
+.clock-hint{font-size:10px;letter-spacing:2px;color:#333;margin-top:40px}
+.note-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px;margin-bottom:8px}
+.note-card-title{font-size:10px;letter-spacing:2px;color:var(--text);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.note-card-body{font-size:11px;color:var(--text2);line-height:1.6;white-space:pre-wrap}
+.note-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px}
+.note-del:hover{color:var(--red)}
+.quiz-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:18px;margin-bottom:12px}
+.quiz-q{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:14px}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:10px 12px;font-size:11px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-align:left;font-family:var(--mono);letter-spacing:0.5px}
+.quiz-opt:hover{border-color:var(--accent,var(--red));color:var(--text)}
+.quiz-opt.correct{border-color:#2aaa2a;background:#0a1a0a;color:#2aaa2a}
+.quiz-opt.wrong{border-color:var(--red);background:#1a0505;color:var(--red)}
+.quiz-exp{font-size:10px;color:var(--text2);margin-top:10px;padding:10px;background:var(--bg3);border-radius:3px;line-height:1.6;display:none}
+.quiz-exp.show{display:block}
+.doubt-wrap{display:flex;flex-direction:column;gap:10px}
+.doubt-msg{padding:10px 12px;border-radius:6px;font-size:11px;line-height:1.6;max-width:85%}
+.doubt-msg.user{background:#1a0505;border:1px solid #ff2a2a22;color:var(--text);align-self:flex-end;border-radius:6px 6px 0 6px}
+.doubt-msg.ai{background:var(--bg2);border:1px solid var(--border);color:var(--text2);align-self:flex-start;border-radius:6px 6px 6px 0}
+.doubt-msg.ai-thinking{color:var(--muted);font-style:italic}
+.doubt-input-row{display:flex;gap:8px;margin-top:8px}
+.doubt-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:10px 12px;outline:none}
+.doubt-input:focus{border-color:#ff2a2a44}
+.doubt-send{background:none;border:1px solid var(--red);border-radius:3px;color:var(--red);font-family:var(--mono);font-size:10px;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.voice-btn{background:var(--bg2);border:1px solid var(--border);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;font-size:20px;flex-shrink:0}
+.voice-btn.listening{border-color:var(--red);background:#1a0505;animation:voicePulse 1s ease-in-out infinite}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 #ff2a2a44}50%{box-shadow:0 0 0 8px #ff2a2a00}}
+.ai-job-card{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--red);border-radius:3px;padding:12px;margin-bottom:8px}
+.ai-job-title{font-size:12px;letter-spacing:1px;color:var(--text);margin-bottom:4px}
+.ai-job-comp{font-size:10px;color:var(--text2);margin-bottom:6px}
+.ai-job-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ai-job-tag{font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:2px;background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.dnd-banner{background:#1a0a00;border:1px solid #ff440044;border-radius:4px;padding:8px 12px;font-size:10px;color:#ff8844;letter-spacing:2px;text-align:center;margin-bottom:12px;display:none}
+.dnd-banner.show{display:block}
+
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .form-2,.form-3{grid-template-columns:1fr}
+  .desk-content{padding:14px}
+}
+@media(min-width:769px){
+  .form-3{grid-template-columns:1fr 1fr 1fr}
 }
 </style>
 </head>
@@ -196,455 +260,709 @@ select.hl-input option{background:#111;color:#fff}
 
 <!-- SPLASH -->
 <div id="splash">
-  <svg class="splash-logo" viewBox="0 0 90 90" fill="none">
-    <circle cx="45" cy="45" r="40" stroke="#ff2a2a" stroke-width="2.5"/>
-    <circle cx="45" cy="45" r="25" stroke="#ff2a2a" stroke-width="1" stroke-dasharray="4 4"/>
-    <circle cx="45" cy="45" r="8" fill="#ff2a2a"/>
-    <line x1="45" y1="5" x2="45" y2="20" stroke="#ff2a2a" stroke-width="2.5"/>
-    <line x1="45" y1="70" x2="45" y2="85" stroke="#ff2a2a" stroke-width="2.5"/>
-    <line x1="5" y1="45" x2="20" y2="45" stroke="#ff2a2a" stroke-width="2.5"/>
-    <line x1="70" y1="45" x2="85" y2="45" stroke="#ff2a2a" stroke-width="2.5"/>
+  <svg class="splash-svg" viewBox="0 0 90 90" fill="none">
+    <circle cx="45" cy="45" r="40" stroke="#ff2a2a" stroke-width="2"/>
+    <circle cx="45" cy="45" r="24" stroke="#ff2a2a" stroke-width="1" stroke-dasharray="4 3"/>
+    <circle cx="45" cy="45" r="7" fill="#ff2a2a"/>
+    <line x1="45" y1="5" x2="45" y2="21" stroke="#ff2a2a" stroke-width="2"/>
+    <line x1="45" y1="69" x2="45" y2="85" stroke="#ff2a2a" stroke-width="2"/>
+    <line x1="5" y1="45" x2="21" y2="45" stroke="#ff2a2a" stroke-width="2"/>
+    <line x1="69" y1="45" x2="85" y2="45" stroke="#ff2a2a" stroke-width="2"/>
   </svg>
   <div class="splash-title">HITLIST</div>
-  <div class="splash-sub">CLASSIFIED JOB TRACKER</div>
-  <div class="splash-loading" id="splashMsg">INITIALIZING...</div>
+  <div class="splash-sub">CLASSIFIED TRACKER</div>
+  <div class="splash-msg" id="splashMsg">INITIALIZING...</div>
+</div>
+
+<!-- MODE SELECT -->
+<div id="modeSelect">
+  <div class="ms-title">CHOOSE YOUR MISSION</div>
+  <div class="ms-sub">SELECT MODE TO CONTINUE</div>
+  <div class="ms-cards">
+    <div class="ms-card" onclick="selectMode('job')">
+      <div class="ms-card-icon">🎯</div>
+      <div class="ms-card-title">JOB SEEKER</div>
+      <div class="ms-card-sub">TRACK APPLICATIONS, INTERVIEWS & TARGETS</div>
+    </div>
+    <div class="ms-card" onclick="selectMode('student')">
+      <div class="ms-card-icon">📚</div>
+      <div class="ms-card-title">STUDENT</div>
+      <div class="ms-card-sub">STUDY TRACKER, POMODORO, NOTES & DOUBT SOLVING</div>
+    </div>
+    <div class="ms-card" onclick="selectMode('both')">
+      <div class="ms-card-icon">⚡</div>
+      <div class="ms-card-title">BOTH</div>
+      <div class="ms-card-sub">JOB SEARCH + STUDY — FULL ARSENAL</div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM SELECT -->
+<div id="examSelect">
+  <div class="es-title">SELECT YOUR BATTLEFIELD</div>
+  <div class="es-sub">CHOOSE YOUR EXAM / FIELD</div>
+  <div class="es-grid">
+    <div class="es-card" onclick="selectExam('ca','theme-ca')"><div class="es-icon">💰</div><div class="es-name">CA / FINANCE</div></div>
+    <div class="es-card" onclick="selectExam('upsc','theme-upsc')"><div class="es-icon">🏛️</div><div class="es-name">UPSC / GOVT</div></div>
+    <div class="es-card" onclick="selectExam('eng','theme-eng')"><div class="es-icon">⚙️</div><div class="es-name">ENGINEERING</div></div>
+    <div class="es-card" onclick="selectExam('med','theme-med')"><div class="es-icon">🏥</div><div class="es-name">MEDICAL / NEET</div></div>
+    <div class="es-card" onclick="selectExam('law','theme-law')"><div class="es-icon">⚖️</div><div class="es-name">LAW / CLAT</div></div>
+    <div class="es-card" onclick="selectExam('gen','theme-gen')"><div class="es-icon">📖</div><div class="es-name">GENERAL</div></div>
+  </div>
 </div>
 
 <!-- PIN -->
 <div id="pinscreen">
   <div class="pin-title">HITLIST</div>
-  <div class="pin-sub" id="pinLabel">ENTER ACCESS CODE</div>
-  <div class="pin-dots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
+  <div class="pin-sub">ENTER ACCESS CODE</div>
+  <div class="pin-dots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div>
+  <div class="pin-pad" id="pinPad">
+    <button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('1')">1</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('2')">2</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('3')">3</button>
+    <button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('4')">4</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('5')">5</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('6')">6</button>
+    <button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('7')">7</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('8')">8</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('9')">9</button>
+    <button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('clr')" style="color:var(--muted)">CLR</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('0')">0</button><button type="button" tabindex="-1" class="pin-btn" onclick="pinPress('ok')" style="color:var(--red)">OK</button>
   </div>
-  <div class="pin-pad">
-    <button class="pin-btn" onclick="pinPress('1')">1</button>
-    <button class="pin-btn" onclick="pinPress('2')">2</button>
-    <button class="pin-btn" onclick="pinPress('3')">3</button>
-    <button class="pin-btn" onclick="pinPress('4')">4</button>
-    <button class="pin-btn" onclick="pinPress('5')">5</button>
-    <button class="pin-btn" onclick="pinPress('6')">6</button>
-    <button class="pin-btn" onclick="pinPress('7')">7</button>
-    <button class="pin-btn" onclick="pinPress('8')">8</button>
-    <button class="pin-btn" onclick="pinPress('9')">9</button>
-    <button class="pin-btn" onclick="pinPress('clr')" style="color:var(--muted)">CLR</button>
-    <button class="pin-btn" onclick="pinPress('0')">0</button>
-    <button class="pin-btn" onclick="pinPress('ok')" style="color:var(--red)">OK</button>
-  </div>
-  <div class="pin-error" id="pinError"></div>
+  <div class="pin-err" id="pinErr"></div>
   <div class="pin-forgot" onclick="forgotPin()">FORGOT PIN?</div>
 </div>
 
 <!-- PROFILE POPUP -->
-<div class="profile-modal-bg" id="profilePopup">
-  <div class="profile-modal">
-    <div id="pmContent"></div>
-    <button class="hl-btn pm-close" onclick="closeProfilePopup()">CLOSE</button>
+<div class="profile-popup-bg" id="profilePopup" onclick="if(event.target===this)closeProfilePopup()">
+  <div class="profile-popup">
+    <div id="ppContent"></div>
+    <button class="hl-btn" style="margin-top:14px" onclick="closeProfilePopup()">CLOSE</button>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <div class="header">
-    <div class="header-logo" onclick="openProfilePopup()">
-      <svg viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="12" stroke="#ff2a2a" stroke-width="1.5"/>
-        <circle cx="14" cy="14" r="7" stroke="#ff2a2a" stroke-width="0.7" stroke-dasharray="2 2"/>
-        <circle cx="14" cy="14" r="2.5" fill="#ff2a2a"/>
-        <line x1="14" y1="2" x2="14" y2="7" stroke="#ff2a2a" stroke-width="1.5"/>
-        <line x1="14" y1="21" x2="14" y2="26" stroke="#ff2a2a" stroke-width="1.5"/>
-        <line x1="2" y1="14" x2="7" y2="14" stroke="#ff2a2a" stroke-width="1.5"/>
-        <line x1="21" y1="14" x2="26" y2="14" stroke="#ff2a2a" stroke-width="1.5"/>
+<!-- DESKTOP APP -->
+<div id="appDesktop">
+  <div class="desk-header">
+    <div class="desk-logo" onclick="openProfilePopup()">
+      <svg class="desk-logo-svg" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="15" r="13" stroke="#ff2a2a" stroke-width="1.5"/>
+        <circle cx="15" cy="15" r="7" stroke="#ff2a2a" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <circle cx="15" cy="15" r="2.5" fill="#ff2a2a"/>
+        <line x1="15" y1="2" x2="15" y2="8" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="15" y1="22" x2="15" y2="28" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="2" y1="15" x2="8" y2="15" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="22" y1="15" x2="28" y2="15" stroke="#ff2a2a" stroke-width="1.5"/>
       </svg>
       <div>
-        <div class="header-brand">HITLIST<span class="cursor"></span></div>
-        <div class="header-sub">CLASSIFIED TRACKER</div>
+        <div class="desk-brand">HITLIST<span class="cursor"></span></div>
+        <div class="desk-sub" id="deskSub">CLASSIFIED TRACKER</div>
+      </div>
+      <div class="banner-wrap">
+        <span class="banner-chain-l"></span>
+        <div class="banner-sign"><div class="banner-text banner-name">OPERATIVE</div><div class="banner-hint">TAP LOGO → PROFILE</div></div>
+        <span class="banner-chain-r"></span>
       </div>
     </div>
-    <div class="header-stats">
-      <div class="hstat"><div class="hstat-n" id="statApplied">0</div><div class="hstat-l">APPLIED</div></div>
-      <div class="hstat"><div class="hstat-n" id="statInt">0</div><div class="hstat-l">INTERVIEWS</div></div>
-      <div class="hstat"><div class="hstat-n" id="statSel">0</div><div class="hstat-l">SELECTED</div></div>
-    </div>
+    <div class="desk-stats" id="deskStats"></div>
   </div>
+  <div class="desk-tabs" id="deskTabs"></div>
+  <div class="desk-content" id="deskContent"></div>
+</div>
 
-  <div class="pages-wrap" id="pagesWrap">
-    <div class="pages-slider" id="pagesSlider">
-
-      <!-- PAGE 0: TARGETS -->
-      <div class="page" id="page0">
-        <div class="sec-label">ADD TARGET</div>
-        <div class="form-row">
-          <div class="field"><div class="hl-label">COMPANY</div><input class="hl-input" id="inCompany" placeholder="COMPANY NAME"></div>
-          <div class="field"><div class="hl-label">ROLE</div><input class="hl-input" id="inRole" placeholder="POSITION"></div>
-        </div>
-        <div class="form-row triple">
-          <div class="field"><div class="hl-label">DATE</div><input class="hl-input" id="inDate" type="date"></div>
-          <div class="field"><div class="hl-label">STATUS</div>
-            <select class="hl-input" id="inStatus">
-              <option value="applied">APPLIED</option>
-              <option value="interview">INTERVIEW</option>
-              <option value="pending">PENDING</option>
-              <option value="selected">SELECTED</option>
-              <option value="rejected">REJECTED</option>
-            </select>
-          </div>
-          <div class="field"><div class="hl-label">LOCATION</div><input class="hl-input" id="inLoc" placeholder="CITY"></div>
-        </div>
-        <div class="field"><div class="hl-label">NOTES</div><input class="hl-input" id="inNotes" placeholder="INTEL..."></div>
-        <button class="hl-btn primary" onclick="addTarget()">+ LOCK TARGET</button>
-        <div style="margin-top:20px">
-          <div class="sec-label">TARGETS</div>
-          <div id="targetList"></div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-num" id="s1">0</div><div class="stat-lbl">APPLIED</div></div>
-          <div class="stat-card"><div class="stat-num" id="s2" style="color:#5577ff">0</div><div class="stat-lbl">INTERVIEWS</div></div>
-          <div class="stat-card"><div class="stat-num" id="s3" style="color:#2aaa2a">0</div><div class="stat-lbl">SELECTED</div></div>
-          <div class="stat-card"><div class="stat-num" id="s4" style="color:#555">0</div><div class="stat-lbl">REJECTED</div></div>
-        </div>
+<!-- MOBILE APP -->
+<div id="appMobile">
+  <div class="mob-header">
+    <div class="mob-logo" onclick="openProfilePopup()">
+      <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="15" r="13" stroke="#ff2a2a" stroke-width="1.5"/>
+        <circle cx="15" cy="15" r="2.5" fill="#ff2a2a"/>
+        <line x1="15" y1="2" x2="15" y2="8" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="15" y1="22" x2="15" y2="28" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="2" y1="15" x2="8" y2="15" stroke="#ff2a2a" stroke-width="1.5"/>
+        <line x1="22" y1="15" x2="28" y2="15" stroke="#ff2a2a" stroke-width="1.5"/>
+      </svg>
+      <div>
+        <div class="mob-brand">HITLIST<span class="cursor"></span></div>
+        <div class="mob-sub" id="mobSub">CLASSIFIED</div>
       </div>
-
-      <!-- PAGE 1: ALARMS -->
-      <div class="page" id="page1">
-        <div class="sec-label">ARM ALARM</div>
-        <div class="field"><div class="hl-label">MISSION LABEL</div><input class="hl-input" id="alarmLabel" placeholder="LABEL"></div>
-        <div class="field"><div class="hl-label">DATE & TIME</div><input class="hl-input" id="alarmTime" type="datetime-local"></div>
-        <button class="hl-btn primary" onclick="addAlarm()">+ ARM ALARM</button>
-        <div style="margin-top:20px">
-          <div class="sec-label">ARMED ALARMS</div>
-          <div id="alarmList"></div>
-        </div>
+      <div class="banner-wrap mob">
+        <span class="banner-chain-l"></span>
+        <div class="banner-sign"><div class="banner-text banner-name">OPERATIVE</div><div class="banner-hint">TAP LOGO → PROFILE</div></div>
+        <span class="banner-chain-r"></span>
       </div>
-
-      <!-- PAGE 2: PROFILE -->
-      <div class="page" id="page2">
-        <div class="sec-label">OPERATIVE PROFILE</div>
-        <div id="profilePhotoWrap" style="text-align:center;margin-bottom:16px">
-          <div class="pm-photo-ph" style="margin:0 auto 8px" onclick="document.getElementById('photoInput').click()">📷</div>
-          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-          <div style="font-size:8px;letter-spacing:2px;color:var(--muted)">TAP TO SET PHOTO</div>
-        </div>
-        <div class="form-row">
-          <div class="field"><div class="hl-label">FULL NAME</div><input class="hl-input" id="pName" placeholder="NAME" oninput="saveProfile()"></div>
-          <div class="field"><div class="hl-label">CODE NAME</div><input class="hl-input" id="pCodename" placeholder="THE ACCOUNTANT" oninput="saveProfile()"></div>
-        </div>
-        <div class="form-row">
-          <div class="field"><div class="hl-label">PHONE</div><input class="hl-input" id="pPhone" placeholder="+91 XXXXXXXXXX" oninput="saveProfile()"></div>
-          <div class="field"><div class="hl-label">EMAIL</div><input class="hl-input" id="pEmail" placeholder="EMAIL" oninput="saveProfile()"></div>
-        </div>
-
-        <div class="field"><div class="hl-label">ADDRESS LINE 1 (HOUSE / FLAT NO)</div><input class="hl-input" id="pAddr1" placeholder="HOUSE NO, STREET" oninput="saveProfile()"></div>
-        <div class="field"><div class="hl-label">ADDRESS LINE 2 (TOWN / AREA)</div><input class="hl-input" id="pAddr2" placeholder="TOWN, AREA, LOCALITY" oninput="saveProfile()"></div>
-        <div class="form-row triple">
-          <div class="field"><div class="hl-label">PINCODE</div><input class="hl-input" id="pPin" placeholder="PINCODE" oninput="saveProfile()"></div>
-          <div class="field" style="grid-column:span 2">
-            <div class="hl-label">COUNTRY</div>
-            <div class="search-dropdown">
-              <input class="hl-input" id="pCountrySearch" placeholder="SEARCH COUNTRY..." oninput="filterCountry()" onfocus="showCountryDrop()" autocomplete="off">
-              <div class="search-results" id="countryDrop"></div>
-            </div>
-            <input type="hidden" id="pCountry">
-          </div>
-        </div>
-        <div class="field" id="stateField" style="display:none">
-          <div class="hl-label">STATE</div>
-          <div class="search-dropdown">
-            <input class="hl-input" id="pStateSearch" placeholder="SEARCH STATE..." oninput="filterState()" onfocus="showStateDrop()" autocomplete="off">
-            <div class="search-results" id="stateDrop"></div>
-          </div>
-          <input type="hidden" id="pState">
-        </div>
-
-        <div class="field"><div class="hl-label">TARGET ROLE</div><input class="hl-input" id="pTargetRole" placeholder="DESIRED ROLE" oninput="saveProfile()"></div>
-        <div class="field"><div class="hl-label">ARMED WITH (SKILLS)</div><input class="hl-input" id="pSkills" placeholder="TALLY PRIME, SAP, MS EXCEL..." oninput="saveProfile()"></div>
-        <div class="field"><div class="hl-label">REWARD (EXPECTED SALARY)</div><input class="hl-input" id="pSalary" placeholder="3-5 LPA" oninput="saveProfile()"></div>
-
-        <div style="margin-top:8px">
-          <div class="hl-label" style="margin-bottom:8px">EDUCATION</div>
-          <div id="eduList"></div>
-          <button class="add-more-btn" onclick="addEduField()" id="addEduBtn">+ ADD EDUCATION</button>
-        </div>
-
-        <div class="field" style="margin-top:10px"><div class="hl-label">CERTIFICATIONS</div><input class="hl-input" id="pCerts" placeholder="YOUR CERTIFICATIONS..." oninput="saveProfile()"></div>
-        <div class="field"><div class="hl-label">LINKEDIN URL</div><input class="hl-input" id="pLinkedin" placeholder="LINKEDIN PROFILE URL" oninput="saveProfile()"></div>
-        <button class="hl-btn primary" style="margin-top:8px" onclick="saveProfile();showToast('PROFILE SAVED')">SAVE PROFILE</button>
-      </div>
-
-      <!-- PAGE 3: SETTINGS -->
-      <div class="page" id="page3">
-        <div class="sec-label">SETTINGS</div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
-          <div class="hl-label" style="margin-bottom:10px">CHANGE PIN</div>
-          <div class="field"><div class="hl-label">CURRENT PIN</div><input class="hl-input" id="oldPin" type="password" placeholder="CURRENT PIN" maxlength="4"></div>
-          <div class="field"><div class="hl-label">NEW PIN</div><input class="hl-input" id="newPin" type="password" placeholder="NEW 4-DIGIT PIN" maxlength="4"></div>
-          <button class="hl-btn primary" onclick="changePin()">UPDATE PIN</button>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
-          <div class="hl-label" style="margin-bottom:10px">VOICE SYSTEM</div>
-          <label style="font-size:11px;letter-spacing:2px;color:var(--text2);display:flex;align-items:center;gap:10px;cursor:pointer">
-            <input type="checkbox" id="voiceToggle" checked onchange="saveSettings()"> VOICE ENABLED
-          </label>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px;margin-bottom:12px">
-          <div class="hl-label" style="margin-bottom:10px">DATA</div>
-          <button class="hl-btn" onclick="exportData()">EXPORT BACKUP</button>
-          <button class="hl-btn danger" onclick="if(confirm('CLEAR ALL DATA? THIS CANNOT BE UNDONE.'))clearData()" style="margin-top:8px">CLEAR ALL DATA</button>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:16px">
-          <div class="hl-label" style="margin-bottom:8px">ABOUT HITLIST</div>
-          <div style="font-size:10px;color:var(--text2);letter-spacing:1px;line-height:2">
-            VERSION 2.0<br>CLASSIFIED JOB TRACKER<br>DATA: LOCAL DEVICE ONLY<br>BY: HITLIST-BOSS
-          </div>
-        </div>
-      </div>
-
     </div>
+    <div class="mob-stats" id="mobStats"></div>
   </div>
-
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <div class="bn-tab active" onclick="goPage(0,this)" id="tab0">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg>
-      <span>TARGETS</span>
-    </div>
-    <div class="bn-tab" onclick="goPage(1,this)" id="tab1">
-      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span>ALARMS</span>
-    </div>
-    <div class="bn-tab" onclick="goPage(2,this)" id="tab2">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>PROFILE</span>
-    </div>
-    <div class="bn-tab" onclick="goPage(3,this)" id="tab3">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span>SETTINGS</span>
-    </div>
+  <div class="mob-pages-wrap" id="mobWrap">
+    <div class="mob-slider" id="mobSlider"></div>
   </div>
+  <div class="mob-bottom" id="mobBottom"></div>
 </div>
 
 <!-- TARGET MODAL -->
-<div class="modal-bg" id="targetModal">
-  <div class="modal">
-    <div class="modal-title">TARGET INTEL <button class="modal-close" onclick="closeModal()">✕</button></div>
-    <div id="modalContent"></div>
-  </div>
+<div class="modal-bg" id="targetModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><div class="modal-title">TARGET INTEL <button class="modal-close" onclick="closeModal()">✕</button></div><div id="modalContent"></div></div>
+</div>
+
+<!-- FULLSCREEN CLOCK -->
+<div class="clock-fullscreen" id="clockFS" onclick="toggleClock()">
+  <div class="clock-time" id="clockTime">00:00:00</div>
+  <div class="clock-date" id="clockDate"></div>
+  <div class="clock-hint">TAP TO CLOSE</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-// ===== DATA =====
-let data={targets:[],alarms:[],profile:{},edu:[],settings:{pin:'1234',voice:true},photo:null};
+// ===== STATE =====
+let D={targets:[],alarms:[],profile:{},edu:[],notes:[],settings:{pin:'1234',voice:true,mode:'',exam:'',theme:''},photo:null,suggestions:[]};
+let isMobile=false,curMobPage=0,touchX=0,touchY=0,eduCount=0;
+let pomoInterval=null,pomoSeconds=25*60,pomoRunning=false,pomoBreak=false,pomoDND=false;
+let clockInterval=null,clockVisible=false;
+let quizData={},curQuiz=null,quizAnswered=false;
+let doubts=[];
+let voiceRecognition=null,voiceActive=false;
 
-function save(){try{localStorage.setItem('hl2',JSON.stringify(data));}catch(e){}}
-function load(){try{const s=localStorage.getItem('hl2');if(s)data=JSON.parse(s);if(!data.edu)data.edu=[];}catch(e){}}
+function save(){try{localStorage.setItem('hl3',JSON.stringify(D));}catch(e){}}
+function load(){try{const s=localStorage.getItem('hl3');if(s){D=JSON.parse(s);if(!D.edu)D.edu=[];if(!D.notes)D.notes=[];if(!D.suggestions)D.suggestions=[];}}catch(e){}}
 
 // ===== AUDIO =====
-function playBeep(freq=440,dur=0.3,type='square'){
+function audio(freq=440,dur=0.3,type='sine',vol=0.3){
+  try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start();o.stop(ctx.currentTime+dur);}catch(e){}
+}
+function audioGunshot(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const o=ctx.createOscillator();
-    const g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type=type;o.frequency.value=freq;
-    g.gain.setValueAtTime(0.3,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
-    o.start();o.stop(ctx.currentTime+dur);
+    const buf=ctx.createBuffer(1,ctx.sampleRate*0.5,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+    const src=ctx.createBufferSource();
+    src.buffer=buf;
+    const g=ctx.createGain();g.gain.setValueAtTime(1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+    src.connect(g);g.connect(ctx.destination);src.start();
   }catch(e){}
 }
-
-function playAlarmSound(){
+function audioAlarm(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    [0,0.3,0.6,0.9].forEach(t=>{
-      const o=ctx.createOscillator();
-      const g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.type='sawtooth';
+    [0,0.3,0.6,0.9,1.2].forEach(t=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.type='sawtooth';
       o.frequency.setValueAtTime(880,ctx.currentTime+t);
       o.frequency.exponentialRampToValueAtTime(440,ctx.currentTime+t+0.25);
-      g.gain.setValueAtTime(0.4,ctx.currentTime+t);
-      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.25);
-      o.start(ctx.currentTime+t);
-      o.stop(ctx.currentTime+t+0.25);
+      g.gain.setValueAtTime(0.4,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.25);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+0.3);
     });
   }catch(e){}
 }
-
-function playProfileSound(){
+function audioProfileOpen(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const seq=[
-      {f:200,t:0,d:0.1},{f:150,t:0.08,d:0.1},
-      {f:100,t:0.16,d:0.15},{f:80,t:0.28,d:0.4}
-    ];
-    seq.forEach(({f,t,d})=>{
-      const o=ctx.createOscillator();
-      const g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.type='sawtooth';o.frequency.value=f;
-      g.gain.setValueAtTime(0.5,ctx.currentTime+t);
-      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+d);
+    [{f:180,t:0,d:0.12},{f:140,t:0.1,d:0.12},{f:100,t:0.2,d:0.15},{f:75,t:0.32,d:0.5}].forEach(({f,t,d})=>{
+      const o=ctx.createOscillator();const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=f;
+      g.gain.setValueAtTime(0.45,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+d);
       o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+d);
     });
   }catch(e){}
 }
+function audioPomoEnd(){[0,0.25,0.5].forEach(t=>setTimeout(()=>audio(880,0.3,'sine',0.4),t*1000));}
+function audioPageChange(n){const f=[660,550,440,380,500];audio(f[n]||440,0.12,'sine',0.2);}
 
-function playPageSound(page){
-  const freqs=[[660,0.15],[440,0.15],[550,0.15],[380,0.15]];
-  const[f,d]=freqs[page]||[440,0.15];
-  playBeep(f,d,'sine');
+// ===== SPEAK =====
+function speak(text){
+  if(!D.settings.voice||pomoDND)return;
+  if(!window.speechSynthesis)return;
+  const u=new SpeechSynthesisUtterance(text);u.rate=0.78;u.pitch=0.5;u.volume=1;
+  const v=window.speechSynthesis.getVoices();
+  const deep=v.find(x=>x.name.includes('Male')||x.name.includes('David')||x.name.includes('UK English Male'));
+  if(deep)u.voice=deep;
+  window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
 }
 
-// ===== VOICE =====
-function speak(text){
-  if(!data.settings.voice)return;
-  if(!window.speechSynthesis)return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.rate=0.75;u.pitch=0.5;u.volume=1;
-  const voices=window.speechSynthesis.getVoices();
-  const deep=voices.find(v=>v.name.includes('Male')||v.name.includes('David')||v.name.includes('UK English Male'));
-  if(deep)u.voice=deep;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
+// ===== DETECT DEVICE =====
+function detectDevice(){
+  const ua=navigator.userAgent;
+  const mobileUA=/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|webOS/i.test(ua);
+  const coarsePointer=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+  const narrow=window.innerWidth<600;
+  // A genuine phone/tablet always matches the UA test. As a fallback (in case
+  // some device's UA doesn't match), only classify as mobile when BOTH the
+  // viewport is phone-sized AND the input is touch-based — this stops a
+  // zoomed-in or narrow desktop browser window from being misread as mobile.
+  isMobile=mobileUA||(narrow&&coarsePointer);
+}
+
+// ===== MODE & EXAM SELECT =====
+function selectMode(mode){
+  D.settings.mode=mode;save();
+  document.getElementById('modeSelect').classList.remove('show');
+  if(mode==='student'||mode==='both'){
+    document.getElementById('examSelect').classList.add('show');
+  }else{
+    document.getElementById('pinscreen').classList.add('show');
+  }
+}
+function selectExam(exam,theme){
+  D.settings.exam=exam;D.settings.theme=theme;save();
+  document.getElementById('examSelect').classList.remove('show');
+  document.getElementById('pinscreen').classList.add('show');
 }
 
 // ===== PIN =====
-let pinBuf='';
+let pinBuf='';let pinAutoCheck=null;let pinChecking=false;
 function pinPress(k){
-  if(k==='clr'){pinBuf='';updateDots();return;}
-  if(k==='ok'){checkPin();return;}
-  if(pinBuf.length<4){pinBuf+=k;updateDots();}
-  if(pinBuf.length===4)setTimeout(checkPin,100);
+  // defensively drop focus so no on-screen button ever lingers focused
+  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
+  if(k==='clr'){pinBuf='';updateDots();if(pinAutoCheck){clearTimeout(pinAutoCheck);pinAutoCheck=null;}return;}
+  if(k==='ok'){if(pinAutoCheck){clearTimeout(pinAutoCheck);pinAutoCheck=null;}checkPin();return;}
+  if(pinBuf.length<4){pinBuf+=k;updateDots();audio(440+pinBuf.length*40,0.1,'sine',0.15);}
+  if(pinBuf.length===4){if(pinAutoCheck)clearTimeout(pinAutoCheck);pinAutoCheck=setTimeout(()=>{pinAutoCheck=null;checkPin();},120);}
 }
 function updateDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pinBuf.length);}
 function checkPin(){
-  if(pinBuf===data.settings.pin){
+  if(pinChecking)return;
+  pinChecking=true;
+  setTimeout(()=>{pinChecking=false;},300);
+  if(pinBuf===D.settings.pin){
     document.getElementById('pinscreen').classList.remove('show');
-    document.getElementById('app').classList.add('show');
-    speak('HITLIST activated. Welcome back, boss.');
-    renderAll();
+    initApp();
   }else{
-    document.getElementById('pinError').textContent='WRONG CODE. TRY AGAIN.';
-    pinBuf='';updateDots();
-    setTimeout(()=>document.getElementById('pinError').textContent='',2000);
+    document.getElementById('pinErr').textContent='WRONG CODE. TRY AGAIN.';
+    audio(220,0.4,'sawtooth',0.3);pinBuf='';updateDots();
+    setTimeout(()=>document.getElementById('pinErr').textContent='',2000);
   }
 }
 function forgotPin(){
-  const ans=prompt('SECURITY CHECK: What is your full name? (as saved in profile)');
-  if(ans&&data.profile.name&&ans.trim().toLowerCase()===data.profile.name.trim().toLowerCase()){
-    const np=prompt('ENTER NEW 4-DIGIT PIN:');
-    if(np&&np.length===4&&!isNaN(np)){
-      data.settings.pin=np;save();
-      alert('PIN UPDATED. NEW PIN: '+np);
-    }else{alert('INVALID PIN FORMAT.');}
-  }else{alert('IDENTITY VERIFICATION FAILED.');}
-}
-function changePin(){
-  const op=document.getElementById('oldPin').value.trim();
-  const np=document.getElementById('newPin').value.trim();
-  if(op!==data.settings.pin){showToast('WRONG CURRENT PIN');return;}
-  if(np.length!==4||isNaN(np)){showToast('4 DIGIT PIN ONLY');return;}
-  data.settings.pin=np;save();
-  document.getElementById('oldPin').value='';
-  document.getElementById('newPin').value='';
-  showToast('PIN UPDATED');speak('Access code updated.');
+  const ans=prompt('VERIFICATION: Enter your full name (as saved in profile):');
+  if(ans&&D.profile.name&&ans.trim().toLowerCase()===D.profile.name.trim().toLowerCase()){
+    const np=prompt('NEW 4-DIGIT PIN:');
+    if(np&&np.length===4&&!isNaN(np)){D.settings.pin=np;save();alert('PIN UPDATED: '+np);}
+    else alert('INVALID. USE 4 DIGITS.');
+  }else alert('VERIFICATION FAILED.');
 }
 
-// ===== SWIPE NAVIGATION =====
-let curPage=0;
-let touchStartX=0,touchStartY=0;
-const PAGES=4;
-
-function goPage(n,tab){
-  curPage=n;
-  document.getElementById('pagesSlider').style.transform=`translateX(-${n*25}%)`;
-  document.querySelectorAll('.bn-tab').forEach(t=>t.classList.remove('active'));
-  if(tab)tab.classList.add('active');
-  else document.getElementById('tab'+n).classList.add('active');
-  playPageSound(n);
-  const voices=['Targets page. Choose your prey.','Alarms page. Stay alert.','Profile page.','Settings page.'];
-  if(n===2)speak('Profile accessed.');
-  else speak(voices[n]||'');
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  const wrap=document.getElementById('pagesWrap');
-  wrap.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;},{passive:true});
-  wrap.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-touchStartX;
-    const dy=e.changedTouches[0].clientY-touchStartY;
-    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
-      if(dx<0&&curPage<PAGES-1)goPage(curPage+1);
-      else if(dx>0&&curPage>0)goPage(curPage-1);
-    }
-  },{passive:true});
+// ===== KEYBOARD PIN (DESKTOP ONLY) =====
+// Only wired for non-touch devices, so a phone's on-screen keyboard (if it
+// ever fires synthetic key events) can never interact with the PIN screen —
+// touch input there is handled purely by pinPress() via the on-screen pad.
+document.addEventListener('keydown',e=>{
+  if(isMobile)return;
+  if(!document.getElementById('pinscreen').classList.contains('show'))return;
+  if(e.key>='0'&&e.key<='9')pinPress(e.key);
+  else if(e.key==='Backspace')pinPress('clr');
+  else if(e.key==='Enter')pinPress('ok');
 });
 
-// ===== TARGETS =====
-const statusMap={
-  applied:['APPLIED','b-applied'],
-  interview:['INTERVIEW','b-interview'],
-  pending:['PENDING','b-pending'],
-  selected:['SELECTED','b-selected'],
-  rejected:['REJECTED','b-rejected']
-};
-
-function addTarget(){
-  const co=document.getElementById('inCompany').value.trim();
-  if(!co){showToast('COMPANY NAME REQUIRED');return;}
-  const t={id:Date.now(),company:co.toUpperCase(),role:document.getElementById('inRole').value.toUpperCase(),
-    date:document.getElementById('inDate').value,status:document.getElementById('inStatus').value,
-    location:document.getElementById('inLoc').value.toUpperCase(),notes:document.getElementById('inNotes').value,
-    added:new Date().toISOString()};
-  data.targets.unshift(t);save();
-  ['inCompany','inRole','inDate','inNotes','inLoc'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('inStatus').value='applied';
-  renderTargets();updateStats();
-  showToast('TARGET LOCKED');speak('Target locked.');playBeep(660,0.2,'square');
+// ===== INIT APP =====
+let appInitialized=false;
+function initApp(){
+  if(appInitialized)return; // guard against double-invocation (e.g. rapid PIN entry race)
+  appInitialized=true;
+  detectDevice();
+  speak('HITLIST activated. Welcome back, boss.');
+  audio(660,0.2,'sine',0.3);
+  if(isMobile)initMobile();
+  else initDesktop();
+  setInterval(checkAlarms,30000);
+  Notification.requestPermission();
+  initClock();
+  initQuizData();
+  initVoice();
+  setTimeout(showBanner,500);
 }
 
-function renderTargets(){
-  const list=document.getElementById('targetList');
-  if(!data.targets.length){list.innerHTML='<div style="font-size:10px;color:var(--muted);padding:20px 0;text-align:center">NO TARGETS ACQUIRED</div>';return;}
-  list.innerHTML=data.targets.map((t,i)=>{
-    const[sl,sc]=statusMap[t.status]||['UNKNOWN','b-pending'];
+// ===== BANNER =====
+function showBanner(){
+  const name=D.profile.name||'OPERATIVE';
+  document.querySelectorAll('.banner-name').forEach(el=>el.textContent=name.toUpperCase());
+  document.querySelectorAll('.banner-wrap').forEach(b=>{
+    b.classList.add('show');
+    setTimeout(()=>b.classList.remove('show'),8000);
+  });
+}
+
+// ===== DESKTOP INIT =====
+const JOB_TABS=[
+  {id:'targets',label:'TARGETS'},
+  {id:'alarms',label:'ALARMS'},
+  {id:'profile',label:'PROFILE'},
+  {id:'aijobs',label:'AI JOBS'},
+  {id:'settings',label:'SETTINGS'}
+];
+const STU_TABS=[
+  {id:'study',label:'STUDY'},
+  {id:'notes',label:'NOTES'},
+  {id:'quiz',label:'QUIZ'},
+  {id:'doubt',label:'DOUBT'},
+  {id:'settings',label:'SETTINGS'}
+];
+const BOTH_TABS=[
+  {id:'targets',label:'TARGETS'},
+  {id:'study',label:'STUDY'},
+  {id:'notes',label:'NOTES'},
+  {id:'quiz',label:'QUIZ'},
+  {id:'doubt',label:'DOUBT'},
+  {id:'aijobs',label:'AI JOBS'},
+  {id:'profile',label:'PROFILE'},
+  {id:'settings',label:'SETTINGS'}
+];
+
+function getTabs(){
+  const m=D.settings.mode;
+  if(m==='student')return STU_TABS;
+  if(m==='both')return BOTH_TABS;
+  return JOB_TABS;
+}
+
+function initDesktop(){
+  document.getElementById('appDesktop').classList.add('show');
+  if(D.settings.theme)document.body.classList.add(D.settings.theme);
+  updateDeskStats();
+  buildDeskTabs();
+  showDeskPage(getTabs()[0].id);
+}
+function buildDeskTabs(){
+  const tabs=getTabs();
+  document.getElementById('deskTabs').innerHTML=tabs.map(t=>`<div class="desk-tab" id="dtab_${t.id}" onclick="showDeskPage('${t.id}',this)">${t.label}</div>`).join('');
+  document.querySelector('#deskTabs .desk-tab').classList.add('active');
+}
+function showDeskPage(id,el){
+  document.querySelectorAll('.desk-tab').forEach(t=>t.classList.remove('active'));
+  const tab=el||document.getElementById('dtab_'+id);
+  if(tab)tab.classList.add('active');
+  audioPageChange(getTabs().findIndex(t=>t.id===id));
+  const c=document.getElementById('deskContent');
+  c.innerHTML=`<div class="desk-page active">${buildPageHTML(id)}</div>`;
+  afterPageRender(id);
+}
+function updateDeskStats(){
+  const m=D.settings.mode;
+  let html='';
+  if(m!=='student'){
+    const tot=D.targets.length,intv=D.targets.filter(t=>t.status==='interview').length,sel=D.targets.filter(t=>t.status==='selected').length;
+    html=`<div class="dstat"><div class="dstat-n">${tot}</div><div class="dstat-l">APPLIED</div></div><div class="dstat"><div class="dstat-n">${intv}</div><div class="dstat-l">INTERVIEWS</div></div><div class="dstat"><div class="dstat-n">${sel}</div><div class="dstat-l">SELECTED</div></div>`;
+  }
+  document.getElementById('deskStats').innerHTML=html;
+  const examNames={ca:'CA/FINANCE',upsc:'UPSC',eng:'ENGINEERING',med:'MEDICAL',law:'LAW',gen:'GENERAL'};
+  if(D.settings.exam)document.getElementById('deskSub').textContent=examNames[D.settings.exam]||'CLASSIFIED';
+}
+
+// ===== MOBILE INIT =====
+function getMobTabs(){
+  const m=D.settings.mode;
+  if(m==='student')return[{id:'study',icon:studyIcon,label:'STUDY'},{id:'notes',icon:notesIcon,label:'NOTES'},{id:'quiz',icon:quizIcon,label:'QUIZ'},{id:'doubt',icon:doubtIcon,label:'DOUBT'},{id:'settings',icon:settingsIcon,label:'MORE'}];
+  if(m==='both')return[{id:'targets',icon:targetIcon,label:'TARGETS'},{id:'study',icon:studyIcon,label:'STUDY'},{id:'notes',icon:notesIcon,label:'NOTES'},{id:'doubt',icon:doubtIcon,label:'DOUBT'},{id:'settings',icon:settingsIcon,label:'MORE'}];
+  return[{id:'targets',icon:targetIcon,label:'TARGETS'},{id:'alarms',icon:alarmIcon,label:'ALARMS'},{id:'profile',icon:profileIcon,label:'PROFILE'},{id:'aijobs',icon:jobsIcon,label:'AI JOBS'},{id:'settings',icon:settingsIcon,label:'MORE'}];
+}
+const targetIcon=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/></svg>`;
+const alarmIcon=`<svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
+const profileIcon=`<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+const settingsIcon=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>`;
+const studyIcon=`<svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
+const notesIcon=`<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+const quizIcon=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+const doubtIcon=`<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const jobsIcon=`<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`;
+
+function initMobile(){
+  document.getElementById('appMobile').classList.add('show');
+  if(D.settings.theme)document.body.classList.add(D.settings.theme);
+  const tabs=getMobTabs();
+  const slider=document.getElementById('mobSlider');
+  const bottom=document.getElementById('mobBottom');
+  const wrap=document.getElementById('mobWrap');
+  slider.style.width=(tabs.length*100)+'%';
+  slider.innerHTML=tabs.map(t=>`<div class="mob-page" style="width:${100/tabs.length}%">${buildPageHTML(t.id)}</div>`).join('');
+  bottom.innerHTML=tabs.map((t,i)=>`<div class="mob-tab ${i===0?'active':''}" id="mtab_${i}" onclick="goMobPage(${i},this)">${t.icon}<span>${t.label}</span></div>`).join('');
+  tabs.forEach((t,i)=>setTimeout(()=>afterPageRender(t.id),100));
+  wrap.addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-touchX;const dy=e.changedTouches[0].clientY-touchY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+      if(dx<0&&curMobPage<tabs.length-1)goMobPage(curMobPage+1);
+      else if(dx>0&&curMobPage>0)goMobPage(curMobPage-1);
+    }
+  },{passive:true});
+  updateMobStats();
+}
+function goMobPage(n,el){
+  curMobPage=n;
+  const tabs=getMobTabs();
+  document.getElementById('mobSlider').style.transform=`translateX(-${n*(100/tabs.length)}%)`;
+  document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('active'));
+  const tab=el||document.getElementById('mtab_'+n);
+  if(tab)tab.classList.add('active');
+  audioPageChange(n);
+  speak(['Targets.','Alarms.','Profile.','Jobs.','Settings.','Study.','Notes.','Quiz.','Doubt portal.'][n]||'');
+}
+function updateMobStats(){
+  const m=D.settings.mode;
+  if(m==='student'){document.getElementById('mobStats').innerHTML='';return;}
+  const tot=D.targets.length,sel=D.targets.filter(t=>t.status==='selected').length;
+  document.getElementById('mobStats').innerHTML=`<div><div class="mob-stat-n">${tot}</div><div class="mob-stat-l">APPLIED</div></div><div><div class="mob-stat-n">${sel}</div><div class="mob-stat-l">SELECTED</div></div>`;
+}
+
+// ===== BUILD PAGE HTML =====
+function buildPageHTML(id){
+  switch(id){
+    case 'targets': return buildTargetsHTML();
+    case 'alarms': return buildAlarmsHTML();
+    case 'profile': return buildProfileHTML();
+    case 'aijobs': return buildAIJobsHTML();
+    case 'study': return buildStudyHTML();
+    case 'notes': return buildNotesHTML();
+    case 'quiz': return buildQuizHTML();
+    case 'doubt': return buildDoubtHTML();
+    case 'settings': return buildSettingsHTML();
+    default: return '<div>Page not found</div>';
+  }
+}
+
+// ===== TARGETS PAGE =====
+function buildTargetsHTML(){
+  const cards=D.targets.map((t,i)=>{
+    const sm={applied:['APPLIED','b-applied'],interview:['INTERVIEW','b-interview'],pending:['PENDING','b-pending'],selected:['SELECTED','b-selected'],rejected:['REJECTED','b-rejected']};
+    const[sl,sc]=sm[t.status]||['UNKNOWN','b-pending'];
     const cls=t.status==='rejected'?'eliminated':t.status==='selected'?'won':'';
-    return`<div class="target-card ${cls}" onclick="openModal(${t.id})">
-      <div class="tc-num">${String(i+1).padStart(3,'0')}</div>
-      <div class="tc-main">
-        <div class="tc-company">${t.company}</div>
-        <div class="tc-role">${t.role}${t.location?' — '+t.location:''}</div>
-      </div>
-      <div class="tc-date">${t.date||''}</div>
-      <div class="badge ${sc}">${sl}</div>
-    </div>`;
+    return`<div class="target-card ${cls}" onclick="openTargetModal(${t.id})"><div class="tc-num">${String(i+1).padStart(3,'0')}</div><div class="tc-main"><div class="tc-co">${t.company}</div><div class="tc-role">${t.role}${t.location?' — '+t.location:''}</div></div><div class="tc-date">${t.date||''}</div><div class="badge ${sc}">${sl}</div></div>`;
   }).join('');
+  const tot=D.targets.length,intv=D.targets.filter(t=>t.status==='interview').length,sel=D.targets.filter(t=>t.status==='selected').length,rej=D.targets.filter(t=>t.status==='rejected').length;
+  return`<div class="sec-label">ADD TARGET</div>
+  <div class="form-2"><div class="field"><div class="hl-label">COMPANY</div><input class="hl-input" id="inCo" placeholder="COMPANY NAME"></div><div class="field"><div class="hl-label">ROLE</div><input class="hl-input" id="inRole" placeholder="POSITION"></div></div>
+  <div class="form-3"><div class="field"><div class="hl-label">DATE</div><input class="hl-input" id="inDate" type="date"></div><div class="field"><div class="hl-label">STATUS</div><select class="hl-input" id="inStatus"><option value="applied">APPLIED</option><option value="interview">INTERVIEW</option><option value="pending">PENDING</option><option value="selected">SELECTED</option><option value="rejected">REJECTED</option></select></div><div class="field"><div class="hl-label">LOCATION</div><input class="hl-input" id="inLoc" placeholder="CITY"></div></div>
+  <div class="field"><div class="hl-label">NOTES</div><input class="hl-input" id="inNotes" placeholder="INTEL..."></div>
+  <button class="hl-btn primary" onclick="addTarget()">+ LOCK TARGET</button>
+  <div style="margin-top:18px"><div class="sec-label">TARGETS</div>${cards||'<div style="text-align:center;color:var(--muted);font-size:10px;padding:20px">NO TARGETS ACQUIRED</div>'}</div>
+  <div class="stats-grid"><div class="stat-card"><div class="stat-num">${tot}</div><div class="stat-lbl">APPLIED</div></div><div class="stat-card"><div class="stat-num" style="color:#5577ff">${intv}</div><div class="stat-lbl">INTERVIEWS</div></div><div class="stat-card"><div class="stat-num" style="color:#2aaa2a">${sel}</div><div class="stat-lbl">SELECTED</div></div><div class="stat-card"><div class="stat-num" style="color:#555">${rej}</div><div class="stat-lbl">REJECTED</div></div></div>`;
 }
 
-function updateStats(){
-  const tot=data.targets.length;
-  const intv=data.targets.filter(t=>t.status==='interview').length;
-  const sel=data.targets.filter(t=>t.status==='selected').length;
-  const rej=data.targets.filter(t=>t.status==='rejected').length;
-  document.getElementById('statApplied').textContent=tot;
-  document.getElementById('statInt').textContent=intv;
-  document.getElementById('statSel').textContent=sel;
-  document.getElementById('s1').textContent=tot;
-  document.getElementById('s2').textContent=intv;
-  document.getElementById('s3').textContent=sel;
-  document.getElementById('s4').textContent=rej;
+// ===== ALARMS PAGE =====
+function buildAlarmsHTML(){
+  const cards=D.alarms.map(a=>{
+    const dt=new Date(a.time);const past=dt<new Date();
+    return`<div class="alarm-card" style="${past?'opacity:0.4':''}"><div style="font-size:18px;color:var(--red)">🔔</div><div class="alarm-txt">${a.label}</div><div class="alarm-time">${dt.toLocaleDateString()}<br>${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div><button class="alarm-del" onclick="deleteAlarm(${a.id})">✕</button></div>`;
+  }).join('');
+  return`<div class="sec-label">ARM ALARM</div>
+  <div class="field"><div class="hl-label">LABEL</div><input class="hl-input" id="alLabel" placeholder="MISSION LABEL"></div>
+  <div class="field"><div class="hl-label">DATE & TIME</div><input class="hl-input" id="alTime" type="datetime-local"></div>
+  <button class="hl-btn primary" onclick="addAlarm()">+ ARM ALARM</button>
+  <div style="margin-top:18px"><div class="sec-label">ARMED ALARMS</div>${cards||'<div style="text-align:center;color:var(--muted);font-size:10px;padding:20px">NO ALARMS ARMED</div>'}</div>`;
 }
 
-// ===== MODAL =====
-function openModal(id){
-  const t=data.targets.find(x=>x.id===id);if(!t)return;
-  const opts=Object.entries(statusMap).map(([k,[l]])=>`<option value="${k}" ${t.status===k?'selected':''}>${l}</option>`).join('');
+// ===== PROFILE PAGE =====
+const COUNTRIES=['Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahrain','Bangladesh','Belarus','Belgium','Bhutan','Bolivia','Brazil','Bulgaria','Cambodia','Canada','Chile','China','Colombia','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Egypt','Estonia','Ethiopia','Finland','France','Germany','Ghana','Greece','Guatemala','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Laos','Latvia','Lebanon','Lithuania','Luxembourg','Malaysia','Maldives','Malta','Mexico','Moldova','Mongolia','Morocco','Myanmar','Nepal','Netherlands','New Zealand','Nigeria','Norway','Oman','Pakistan','Palestine','Panama','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Saudi Arabia','Serbia','Singapore','Slovakia','Slovenia','South Africa','South Korea','Spain','Sri Lanka','Sudan','Sweden','Switzerland','Syria','Taiwan','Thailand','Tunisia','Turkey','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zimbabwe'];
+const STATES_IN=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jammu & Kashmir','Jharkhand','Karnataka','Kerala','Ladakh','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Puducherry','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal'];
+
+function buildProfileHTML(){
+  const p=D.profile||{};
+  const photoHtml=D.photo?`<img src="${D.photo}" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--red);object-fit:cover;display:block;margin:0 auto 8px;cursor:pointer" onclick="document.getElementById('photoInput').click()">`:`<div style="width:80px;height:80px;border-radius:50%;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;background:var(--bg3);color:var(--red);font-size:28px;cursor:pointer" onclick="document.getElementById('photoInput').click()">📷</div>`;
+  const eduRows=(D.edu||[]).map((v,i)=>`<div class="edu-row" id="edurow_${i}"><input class="hl-input" value="${v}" placeholder="EG. B.COM — FIRST DIVISION" oninput="updateEdu(${i},this.value)"><button class="edu-del" onclick="removeEdu(${i})">✕</button></div>`).join('');
+  return`<div class="sec-label">OPERATIVE PROFILE</div>
+  ${photoHtml}<input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+  <p style="text-align:center;font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:14px">TAP PHOTO TO CHANGE</p>
+  <div class="form-2"><div class="field"><div class="hl-label">FULL NAME</div><input class="hl-input" id="pName" value="${p.name||''}" placeholder="YOUR NAME" oninput="saveProfile()"></div><div class="field"><div class="hl-label">CODE NAME</div><input class="hl-input" id="pCode" value="${p.codename||''}" placeholder="THE ACCOUNTANT" oninput="saveProfile()"></div></div>
+  <div class="form-2"><div class="field"><div class="hl-label">PHONE</div><input class="hl-input" id="pPhone" value="${p.phone||''}" placeholder="+91 XXXXXXXXXX" oninput="saveProfile()"></div><div class="field"><div class="hl-label">EMAIL</div><input class="hl-input" id="pEmail" value="${p.email||''}" placeholder="EMAIL" oninput="saveProfile()"></div></div>
+  <div class="field"><div class="hl-label">ADDRESS LINE 1 (HOUSE/FLAT NO, STREET)</div><input class="hl-input" id="pAddr1" value="${p.addr1||''}" placeholder="HOUSE NO, STREET NAME" oninput="saveProfile()"></div>
+  <div class="field"><div class="hl-label">ADDRESS LINE 2 (TOWN / AREA / LOCALITY)</div><input class="hl-input" id="pAddr2" value="${p.addr2||''}" placeholder="TOWN, AREA, LOCALITY" oninput="saveProfile()"></div>
+  <div class="form-2">
+    <div class="field"><div class="hl-label">PINCODE</div><input class="hl-input" id="pPincode" value="${p.pincode||''}" placeholder="PINCODE" oninput="saveProfile()"></div>
+    <div class="field"><div class="hl-label">COUNTRY</div><div class="search-dd"><input class="hl-input" id="pCountryS" value="${p.country||''}" placeholder="SEARCH COUNTRY..." oninput="filterDrop('country')" onfocus="filterDrop('country')" autocomplete="off"><div class="drop-list" id="countryDrop"></div></div><input type="hidden" id="pCountry" value="${p.country||''}"></div>
+  </div>
+  <div class="field" id="stateField" style="${p.country==='India'?'':'display:none'}"><div class="hl-label">STATE</div><div class="search-dd"><input class="hl-input" id="pStateS" value="${p.state||''}" placeholder="SEARCH STATE..." oninput="filterDrop('state')" onfocus="filterDrop('state')" autocomplete="off"><div class="drop-list" id="stateDrop"></div></div><input type="hidden" id="pState" value="${p.state||''}"></div>
+  <div class="field"><div class="hl-label">TARGET ROLE</div><input class="hl-input" id="pRole" value="${p.targetRole||''}" placeholder="DESIRED ROLE" oninput="saveProfile()"></div>
+  <div class="field"><div class="hl-label">ARMED WITH (SKILLS)</div><input class="hl-input" id="pSkills" value="${p.skills||''}" placeholder="TALLY PRIME, SAP, EXCEL..." oninput="saveProfile()"></div>
+  <div class="field"><div class="hl-label">REWARD (EXPECTED SALARY)</div><input class="hl-input" id="pSalary" value="${p.salary||''}" placeholder="3-5 LPA" oninput="saveProfile()"></div>
+  <div style="margin-top:8px"><div class="hl-label" style="margin-bottom:8px">EDUCATION</div><div id="eduList">${eduRows}</div><button class="add-btn" onclick="addEduField()" id="addEduBtn"${(D.edu||[]).length>=4?' style="display:none"':''}>+ ADD EDUCATION</button></div>
+  <div class="field" style="margin-top:10px"><div class="hl-label">CERTIFICATIONS</div><input class="hl-input" id="pCerts" value="${p.certs||''}" placeholder="YOUR CERTIFICATIONS..." oninput="saveProfile()"></div>
+  <div class="field"><div class="hl-label">LINKEDIN URL</div><input class="hl-input" id="pLinkedin" value="${p.linkedin||''}" placeholder="LINKEDIN PROFILE URL" oninput="saveProfile()"></div>
+  <button class="hl-btn primary" style="margin-top:8px" onclick="saveProfile();showToast('PROFILE SAVED')">SAVE PROFILE</button>`;
+}
+
+// ===== AI JOBS PAGE =====
+function buildAIJobsHTML(){
+  return`<div class="sec-label">AI JOB SEARCH</div>
+  <div class="field"><div class="hl-label">YOUR SKILLS</div><input class="hl-input" id="ajSkills" value="${D.profile.skills||''}" placeholder="TALLY, SAP, EXCEL..."></div>
+  <div class="field"><div class="hl-label">EXPERIENCE</div><select class="hl-input" id="ajExp"><option value="0">FRESHER (0 YRS)</option><option value="1">1-2 YEARS</option><option value="3">3-5 YEARS</option><option value="5">5+ YEARS</option></select></div>
+  <div class="field"><div class="hl-label">PREFERRED LOCATION</div><input class="hl-input" id="ajLoc" placeholder="CITY OR REMOTE"></div>
+  <button class="hl-btn primary" onclick="searchAIJobs()">🔍 SEARCH JOBS WITH AI</button>
+  <div id="aiJobResults" style="margin-top:16px"></div>`;
+}
+
+// ===== STUDY PAGE =====
+function buildStudyHTML(){
+  const examMotivation={ca:'💰 CA ASPIRANT — THE NUMBERS ARE YOUR WEAPON',upsc:'🏛️ FUTURE OFFICER — SERVE AND PROTECT',eng:'⚙️ ENGINEER — BUILD THE FUTURE',med:'🏥 FUTURE DOCTOR — EVERY MINUTE MATTERS',law:'⚖️ FUTURE LAWYER — TRUTH IS YOUR ARMOR',gen:'📖 KNOWLEDGE IS POWER — KEEP GOING'};
+  const motivation=examMotivation[D.settings.exam]||'📚 STAY FOCUSED. STAY SHARP.';
+  return`<div id="dndBanner" class="dnd-banner ${pomoDND?'show':''}">🔕 DND MODE ACTIVE — STAY FOCUSED</div>
+  <div style="text-align:center;font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;padding:10px;background:var(--bg2);border-radius:4px;border:1px solid var(--border)">${motivation}</div>
+  <div class="sec-label">POMODORO TIMER</div>
+  <div class="pomodoro-wrap">
+    <div class="pomo-time" id="pomoDisplay">${formatTime(pomoSeconds)}</div>
+    <div class="pomo-label" id="pomoLabel">${pomoBreak?'BREAK TIME':'FOCUS SESSION'}</div>
+    <div class="pomo-btns">
+      <button class="pomo-btn ${pomoRunning?'active':''}" onclick="togglePomo()" id="pomoStartBtn">${pomoRunning?'PAUSE':'START'}</button>
+      <button class="pomo-btn" onclick="resetPomo()">RESET</button>
+      <button class="pomo-btn" onclick="toggleClock()">FULLSCREEN</button>
+    </div>
+    <div class="pomo-progress"><div class="pomo-bar" id="pomoBar"></div></div>
+  </div>
+  <div class="sec-label">SESSION TYPE</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button class="pomo-btn ${!pomoBreak?'active':''}" onclick="setPomoMode(false)" style="flex:1">25 MIN FOCUS</button>
+    <button class="pomo-btn ${pomoBreak?'active':''}" onclick="setPomoMode(true)" style="flex:1">5 MIN BREAK</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px">
+    <div class="hl-label" style="margin-bottom:8px">TODAY'S STATS</div>
+    <div style="font-size:11px;color:var(--text2);letter-spacing:1px">POMODOROS TODAY: <span style="color:var(--red)" id="pomoCount">${D.settings.pomoCount||0}</span></div>
+  </div>`;
+}
+
+// ===== NOTES PAGE =====
+function buildNotesHTML(){
+  const noteCards=D.notes.map((n,i)=>`<div class="note-card"><div class="note-card-title"><span>${n.title||'NOTE '+(i+1)}</span><button class="note-del" onclick="deleteNote(${i})">✕</button></div><div class="note-card-body">${n.body}</div></div>`).join('');
+  return`<div class="sec-label">NEW NOTE</div>
+  <div class="field"><div class="hl-label">TITLE</div><input class="hl-input" id="noteTitle" placeholder="NOTE TITLE"></div>
+  <div class="field"><div class="hl-label">CONTENT</div><textarea class="hl-input" id="noteBody" style="min-height:100px;resize:vertical" placeholder="YOUR NOTES HERE..."></textarea></div>
+  <div style="display:flex;gap:8px">
+    <button class="hl-btn primary" onclick="addNote()" style="flex:2">+ SAVE NOTE</button>
+    <button class="hl-btn" id="voiceNoteBtn" onclick="toggleVoiceNote()" style="flex:1;border-color:var(--border)">🎤 VOICE</button>
+  </div>
+  <div id="voiceStatus" style="font-size:9px;letter-spacing:2px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px"></div>
+  <div style="margin-top:16px"><div class="sec-label">SAVED NOTES</div>${noteCards||'<div style="text-align:center;color:var(--muted);font-size:10px;padding:20px">NO NOTES YET</div>'}</div>`;
+}
+
+// ===== QUIZ PAGE =====
+function buildQuizHTML(){
+  const examNames={ca:'CA / FINANCE',upsc:'UPSC / GOVT',eng:'ENGINEERING',med:'MEDICAL',law:'LAW',gen:'GENERAL'};
+  return`<div class="sec-label">QUIZ — ${examNames[D.settings.exam]||'GENERAL'}</div>
+  <div id="quizContainer">${buildQuizCard()}</div>`;
+}
+function buildQuizCard(){
+  const qs=quizData[D.settings.exam]||quizData.gen||[];
+  if(!qs.length)return'<div style="color:var(--muted);text-align:center;padding:20px;font-size:11px">LOADING QUESTIONS...</div>';
+  const idx=Math.floor(Math.random()*qs.length);
+  curQuiz=qs[idx];quizAnswered=false;
+  const opts=curQuiz.options.map((o,i)=>`<button class="quiz-opt" onclick="checkQuiz(${i},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
+  return`<div class="quiz-card"><div class="quiz-q">Q. ${curQuiz.q}</div><div class="quiz-opts">${opts}</div><div class="quiz-exp" id="quizExp">${curQuiz.exp||''}</div></div><button class="hl-btn" onclick="nextQuiz()" style="margin-top:8px">NEXT QUESTION →</button>`;
+}
+function checkQuiz(i,btn){
+  if(quizAnswered)return;quizAnswered=true;
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach((b,j)=>{if(j===curQuiz.ans)b.classList.add('correct');else if(j===i&&i!==curQuiz.ans)b.classList.add('wrong');});
+  const exp=document.getElementById('quizExp');if(exp)exp.classList.add('show');
+  if(i===curQuiz.ans){audio(880,0.3,'sine',0.3);showToast('✓ CORRECT!');}
+  else{audio(220,0.3,'sawtooth',0.3);showToast('✗ WRONG');}
+}
+function nextQuiz(){
+  const c=document.getElementById('quizContainer');
+  if(c)c.innerHTML=buildQuizCard();
+}
+function initQuizData(){
+  quizData={
+    ca:[
+      {q:'Which accounting standard deals with Revenue Recognition?',options:['AS 9','AS 6','AS 2','AS 15'],ans:0,exp:'AS 9 deals with Revenue Recognition in India.'},
+      {q:'Full form of GAAP?',options:['Generally Accepted Accounting Principles','General Accounting And Practices','Global Accounting Assessment Procedure','General Asset Allocation Policy'],ans:0,exp:'GAAP stands for Generally Accepted Accounting Principles.'},
+      {q:'In Double Entry System, every debit has a corresponding:',options:['Debit','Credit','Asset','Liability'],ans:1,exp:'In Double Entry, every debit must have an equal and opposite credit.'},
+      {q:'GST was implemented in India on:',options:['1 April 2017','1 July 2017','1 January 2018','1 April 2018'],ans:1,exp:'GST was implemented on 1st July 2017.'},
+      {q:'What is the full form of EBITDA?',options:['Earnings Before Interest Tax Depreciation Amortization','Estimated Budget Including Tax Depreciation Assessment','Equity Based Income Tax Deduction Amount','None of these'],ans:0,exp:'EBITDA measures a company\'s core profitability.'},
+      {q:'Which is NOT a current asset?',options:['Cash','Debtors','Goodwill','Inventory'],ans:2,exp:'Goodwill is an intangible fixed/non-current asset.'},
+      {q:'Trial Balance checks:',options:['Profitability','Arithmetic accuracy of ledger','Cash flow','Tax liability'],ans:1,exp:'Trial Balance verifies the arithmetic accuracy of the ledger entries.'},
+      {q:'CGST full form:',options:['Central Goods and Services Tax','Combined GST','Common GST','Corporate GST'],ans:0,exp:'CGST is Central Goods and Services Tax levied by Central Government.'},
+    ],
+    upsc:[
+      {q:'Which Article of Indian Constitution abolishes untouchability?',options:['Article 14','Article 17','Article 21','Article 32'],ans:1,exp:'Article 17 abolishes untouchability and forbids its practice.'},
+      {q:'Panchayati Raj is related to which part of the Constitution?',options:['Part IX','Part X','Part XI','Part XII'],ans:0,exp:'Part IX of the Constitution deals with Panchayats (Article 243).'},
+      {q:'Who appoints the Chief Election Commissioner?',options:['Prime Minister','Parliament','President','Vice President'],ans:2,exp:'The President appoints the Chief Election Commissioner.'},
+      {q:'NITI Aayog replaced which body?',options:['Finance Commission','Planning Commission','Election Commission','CAG'],ans:1,exp:'NITI Aayog replaced the Planning Commission in January 2015.'},
+      {q:'The Right to Education Act was passed in:',options:['2005','2007','2009','2011'],ans:2,exp:'The Right of Children to Free and Compulsory Education Act was passed in 2009.'},
+    ],
+    eng:[
+      {q:"Newton's Second Law states that F = ?",options:['ma','mv','m/a','v/t'],ans:0,exp:'Force = mass × acceleration (F = ma).'},
+      {q:'Which data structure works on LIFO principle?',options:['Queue','Stack','Array','Tree'],ans:1,exp:'Stack follows Last In First Out (LIFO) principle.'},
+      {q:'Ohm\'s Law: V = ?',options:['I/R','IR','I²R','R/I'],ans:1,exp:'V = IR where V is voltage, I is current, R is resistance.'},
+      {q:'Binary of decimal 10 is:',options:['1010','1001','1100','1110'],ans:0,exp:'10 in binary is 1010 (8+2=10).'},
+    ],
+    med:[
+      {q:'The largest organ of the human body is:',options:['Liver','Brain','Skin','Heart'],ans:2,exp:'Skin is the largest organ of the human body.'},
+      {q:'Normal blood pH range is:',options:['6.8-7.0','7.35-7.45','7.5-7.8','7.0-7.2'],ans:1,exp:'Normal blood pH is slightly alkaline: 7.35-7.45.'},
+      {q:'Which blood group is universal donor?',options:['A+','B+','O-','AB+'],ans:2,exp:'O- (O negative) is the universal donor as it has no A, B, or Rh antigens.'},
+      {q:'DNA stands for:',options:['Dioxynucleic Acid','Deoxyribonucleic Acid','Dinucleic Acid','Diribose Nucleic Acid'],ans:1,exp:'DNA stands for Deoxyribonucleic Acid.'},
+    ],
+    law:[
+      {q:'IPC stands for:',options:['Indian Penal Code','Indian Police Code','Indian Procedural Code','Indian Protection Code'],ans:0,exp:'IPC stands for Indian Penal Code, enacted in 1860.'},
+      {q:'Habeas Corpus means:',options:['You have the law','You shall have the body','Let justice be done','Command to produce'],ans:1,exp:'Habeas Corpus literally means "You shall have the body" — a writ protecting against unlawful detention.'},
+      {q:'Article 21 protects:',options:['Right to Equality','Right to Life and Personal Liberty','Right to Freedom','Right against Exploitation'],ans:1,exp:'Article 21: No person shall be deprived of his life or personal liberty except according to procedure established by law.'},
+    ],
+    gen:[
+      {q:'Who wrote "Wings of Fire"?',options:['Narendra Modi','APJ Abdul Kalam','Amartya Sen','Ratan Tata'],ans:1,exp:'Wings of Fire is the autobiography of Dr. APJ Abdul Kalam.'},
+      {q:'Capital of Australia:',options:['Sydney','Melbourne','Canberra','Perth'],ans:2,exp:'Canberra is the capital of Australia, not Sydney.'},
+      {q:'Full form of CPU:',options:['Central Processing Unit','Computer Processing Unit','Central Program Unit','Core Processing Unit'],ans:0,exp:'CPU stands for Central Processing Unit — the brain of the computer.'},
+      {q:'Which planet is closest to the Sun?',options:['Venus','Earth','Mars','Mercury'],ans:3,exp:'Mercury is the closest planet to the Sun.'},
+    ]
+  };
+}
+
+// ===== DOUBT PORTAL =====
+function buildDoubtHTML(){
+  const msgs=doubts.map(d=>`<div class="doubt-msg ${d.role}">${d.text}</div>`).join('');
+  return`<div class="sec-label">DOUBT PORTAL — AI POWERED</div>
+  <div style="background:var(--bg2);border:1px solid #ff2a2a22;border-radius:4px;padding:8px 12px;font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:12px">⚠️ AI ANSWERS MAY NOT BE 100% ACCURATE. VERIFY FROM TEXTBOOKS.</div>
+  <div class="doubt-wrap" id="doubtMsgs" style="max-height:45vh;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:8px">${msgs||'<div style="color:var(--muted);font-size:10px;text-align:center;padding:20px">ASK ANYTHING — AI WILL ANSWER</div>'}</div>
+  <div class="doubt-input-row">
+    <input class="doubt-input" id="doubtIn" placeholder="ASK YOUR DOUBT..." onkeydown="if(event.key==='Enter')sendDoubt()">
+    <button class="doubt-send" onclick="sendDoubt()">SEND</button>
+  </div>`;
+}
+
+// ===== SETTINGS PAGE =====
+function buildSettingsHTML(){
+  return`<div class="sec-label">SETTINGS</div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">CHANGE PIN</div>
+    <div class="field"><div class="hl-label">CURRENT PIN</div><input class="hl-input" id="oldPin" type="password" placeholder="CURRENT PIN" maxlength="4"></div>
+    <div class="field"><div class="hl-label">NEW PIN</div><input class="hl-input" id="newPin" type="password" placeholder="NEW 4-DIGIT PIN" maxlength="4"></div>
+    <button class="hl-btn primary" onclick="changePin()">UPDATE PIN</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">VOICE SYSTEM</div>
+    <label style="font-size:11px;letter-spacing:1px;color:var(--text2);display:flex;align-items:center;gap:10px;cursor:pointer"><input type="checkbox" id="voiceToggle" ${D.settings.voice?'checked':''} onchange="D.settings.voice=this.checked;save()"> VOICE ENABLED</label>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">CHANGE MODE</div>
+    <button class="hl-btn" onclick="D.settings.mode='';save();location.reload()">SWITCH MODE / EXAM</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">SUGGESTIONS</div>
+    <textarea class="hl-input" id="suggestionBox" style="min-height:80px;resize:vertical" placeholder="WHAT FEATURE DO YOU WANT NEXT?"></textarea>
+    <button class="hl-btn primary" onclick="saveSuggestion()" style="margin-top:8px">SUBMIT SUGGESTION</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">DATA</div>
+    <button class="hl-btn" onclick="exportData()">EXPORT BACKUP</button>
+    <button class="hl-btn danger" onclick="if(confirm('CLEAR ALL DATA?'))clearAll()" style="margin-top:8px">CLEAR ALL DATA</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px">
+    <div class="hl-label" style="margin-bottom:8px">ABOUT</div>
+    <div style="font-size:10px;color:var(--text2);letter-spacing:1px;line-height:2">HITLIST v3.0<br>CLASSIFIED JOB + STUDY TRACKER<br>DATA: LOCAL DEVICE ONLY<br>BY: HITLIST-BOSS</div>
+  </div>`;
+}
+
+// ===== AFTER PAGE RENDER =====
+function afterPageRender(id){
+  if(id==='targets'){}
+  if(id==='study')startClockUpdate();
+  if(id==='quiz'){}
+}
+
+// ===== TARGETS ACTIONS =====
+function addTarget(){
+  const co=(document.getElementById('inCo')||{}).value?.trim();
+  if(!co){showToast('COMPANY NAME REQUIRED');return;}
+  const t={id:Date.now(),company:co.toUpperCase(),role:(document.getElementById('inRole').value||'').toUpperCase(),date:document.getElementById('inDate').value||'',status:document.getElementById('inStatus').value,location:(document.getElementById('inLoc').value||'').toUpperCase(),notes:document.getElementById('inNotes').value||'',added:new Date().toISOString()};
+  D.targets.unshift(t);save();
+  ['inCo','inRole','inDate','inNotes','inLoc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('inStatus').value='applied';
+  refreshPage();showToast('TARGET LOCKED');speak('Target locked.');audio(660,0.2,'square',0.3);
+}
+function openTargetModal(id){
+  const t=D.targets.find(x=>x.id===id);if(!t)return;
+  const sm={applied:['APPLIED','b-applied'],interview:['INTERVIEW','b-interview'],pending:['PENDING','b-pending'],selected:['SELECTED','b-selected'],rejected:['REJECTED','b-rejected']};
+  const opts=Object.entries(sm).map(([k,[l]])=>`<option value="${k}" ${t.status===k?'selected':''}>${l}</option>`).join('');
   document.getElementById('modalContent').innerHTML=`
     <div class="field"><div class="hl-label">COMPANY</div><div style="font-size:15px;letter-spacing:2px">${t.company}</div></div>
     <div class="field"><div class="hl-label">ROLE</div><div style="font-size:12px;color:var(--text2)">${t.role}</div></div>
@@ -652,207 +970,345 @@ function openModal(id){
     ${t.date?`<div class="field"><div class="hl-label">DATE</div><div style="font-size:12px">${t.date}</div></div>`:''}
     <div class="field"><div class="hl-label">UPDATE STATUS</div><select class="hl-input" onchange="updateTargetStatus(${id},this.value)">${opts}</select></div>
     <div class="field"><div class="hl-label">NOTES</div><textarea class="hl-input" style="resize:vertical;min-height:70px" onchange="updateNotes(${id},this.value)">${t.notes||''}</textarea></div>
-    <button class="hl-btn danger" onclick="deleteTarget(${id});closeModal()" style="margin-top:8px">DELETE TARGET</button>
-  `;
+    <button class="hl-btn danger" onclick="deleteTarget(${id});closeModal()" style="margin-top:8px">DELETE TARGET</button>`;
   document.getElementById('targetModal').classList.add('show');
 }
 function updateTargetStatus(id,status){
-  const t=data.targets.find(x=>x.id===id);if(!t)return;
-  t.status=status;save();renderTargets();updateStats();
-  const msgs={rejected:['TARGET ELIMINATED','Target eliminated.'],interview:['ENGAGEMENT CONFIRMED','Engagement confirmed.'],selected:['MISSION COMPLETE','Mission complete. Well played, boss.']};
-  if(msgs[status]){showToast(msgs[status][0]);speak(msgs[status][1]);playBeep(status==='selected'?880:440,0.3);}
+  const t=D.targets.find(x=>x.id===id);if(!t)return;
+  t.status=status;save();refreshPage();
+  const m={rejected:['TARGET ELIMINATED','Target eliminated.'],interview:['ENGAGEMENT CONFIRMED','Engagement confirmed.'],selected:['MISSION COMPLETE. WELL PLAYED BOSS.','Mission complete. Well played, boss.']};
+  if(m[status]){showToast(m[status][0]);speak(m[status][1]);audio(status==='selected'?880:440,0.3,'sine',0.3);}
 }
-function updateNotes(id,val){const t=data.targets.find(x=>x.id===id);if(t){t.notes=val;save();}}
-function deleteTarget(id){data.targets=data.targets.filter(x=>x.id!==id);save();renderTargets();updateStats();showToast('TARGET REMOVED');}
+function updateNotes(id,val){const t=D.targets.find(x=>x.id===id);if(t){t.notes=val;save();}}
+function deleteTarget(id){D.targets=D.targets.filter(x=>x.id!==id);save();refreshPage();showToast('TARGET REMOVED');}
 function closeModal(){document.getElementById('targetModal').classList.remove('show');}
 
-// ===== ALARMS =====
+// ===== ALARM ACTIONS =====
 function addAlarm(){
-  const label=document.getElementById('alarmLabel').value.trim();
-  const time=document.getElementById('alarmTime').value;
-  if(!label||!time){showToast('FILL ALL FIELDS');return;}
-  data.alarms.push({id:Date.now(),label:label.toUpperCase(),time,fired:false});
-  save();document.getElementById('alarmLabel').value='';document.getElementById('alarmTime').value='';
-  renderAlarms();showToast('ALARM ARMED');speak('Alarm armed. We do not miss.');playBeep(550,0.2);
+  const l=(document.getElementById('alLabel')||{}).value?.trim();
+  const ti=(document.getElementById('alTime')||{}).value;
+  if(!l||!ti){showToast('FILL ALL FIELDS');return;}
+  D.alarms.push({id:Date.now(),label:l.toUpperCase(),time:ti,fired:false});save();
+  document.getElementById('alLabel').value='';document.getElementById('alTime').value='';
+  refreshPage();showToast('ALARM ARMED');speak('Alarm armed.');audio(550,0.2,'sine',0.2);
 }
-function deleteAlarm(id){data.alarms=data.alarms.filter(x=>x.id!==id);save();renderAlarms();}
-function renderAlarms(){
-  const list=document.getElementById('alarmList');
-  if(!data.alarms.length){list.innerHTML='<div style="font-size:10px;color:var(--muted);text-align:center;padding:20px 0">NO ALARMS ARMED</div>';return;}
-  list.innerHTML=data.alarms.map(a=>{
-    const dt=new Date(a.time);
-    const past=dt<new Date();
-    return`<div class="alarm-card" style="${past?'opacity:0.45':''}">
-      <div style="color:var(--red);font-size:18px">🔔</div>
-      <div class="alarm-text">${a.label}</div>
-      <div class="alarm-time">${dt.toLocaleDateString()}<br>${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
-      <button class="alarm-del" onclick="deleteAlarm(${a.id})">✕</button>
-    </div>`;
-  }).join('');
-}
+function deleteAlarm(id){D.alarms=D.alarms.filter(x=>x.id!==id);save();refreshPage();}
 function checkAlarms(){
   const now=new Date();
-  data.alarms.forEach(a=>{
+  D.alarms.forEach(a=>{
     if(!a.fired&&new Date(a.time)<=now){
       a.fired=true;save();
-      showToast('🔔 ALERT! '+a.label);
-      speak('Alert. Alert. Boss. You have a mission. '+a.label+'. Move now.');
-      playAlarmSound();
+      if(!pomoDND){showToast('🔔 ALERT! '+a.label);speak('Alert. Alert. Boss. You have a mission. '+a.label+'. Move now.');audioAlarm();}
       if(Notification.permission==='granted')new Notification('HITLIST ALARM',{body:a.label});
     }
   });
 }
 
-// ===== EDUCATION =====
-let eduCount=0;
-function addEduField(val=''){
-  if(eduCount>=4){showToast('MAX 4 EDUCATION ENTRIES');return;}
-  const id='edu_'+Date.now();
-  const div=document.createElement('div');
-  div.className='edu-row';div.id=id;
-  div.innerHTML=`<input class="hl-input" placeholder="EG. B.COM — FIRST DIVISION, UNIVERSITY OF LUCKNOW" value="${val}" oninput="saveProfile()"><button class="edu-del" onclick="removeEdu('${id}')">✕</button>`;
-  document.getElementById('eduList').appendChild(div);
-  eduCount++;
-  if(eduCount>=4)document.getElementById('addEduBtn').style.display='none';
-}
-function removeEdu(id){
-  document.getElementById(id)?.remove();
-  eduCount--;
-  document.getElementById('addEduBtn').style.display='';
-  saveProfile();
-}
-function getEduValues(){
-  return Array.from(document.querySelectorAll('#eduList .hl-input')).map(i=>i.value.trim()).filter(Boolean);
-}
-
-// ===== COUNTRIES & STATES =====
-const COUNTRIES=['Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Chad','Chile','China','Colombia','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominican Republic','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana','Greece','Guatemala','Guinea','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Mauritania','Mauritius','Mexico','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan','Palestine','Panama','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saudi Arabia','Senegal','Serbia','Sierra Leone','Singapore','Slovakia','Slovenia','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'];
-
-const STATES_IN=['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Chandigarh','Puducherry'];
-
-let countryDropOpen=false,stateDropOpen=false;
-
-function filterCountry(){
-  const q=document.getElementById('pCountrySearch').value.toLowerCase();
-  const res=COUNTRIES.filter(c=>c.toLowerCase().includes(q));
-  const drop=document.getElementById('countryDrop');
-  drop.innerHTML=res.map(c=>`<div class="search-item" onclick="selectCountry('${c}')">${c}</div>`).join('');
-  drop.classList.add('show');
-}
-function showCountryDrop(){
-  filterCountry();
-  document.getElementById('countryDrop').classList.add('show');
-}
-function selectCountry(c){
-  document.getElementById('pCountry').value=c;
-  document.getElementById('pCountrySearch').value=c;
-  document.getElementById('countryDrop').classList.remove('show');
-  if(c==='India'){
-    document.getElementById('stateField').style.display='';
-  }else{
-    document.getElementById('stateField').style.display='none';
-    document.getElementById('pState').value='';
-    document.getElementById('pStateSearch').value='';
-  }
-  saveProfile();
-}
-function filterState(){
-  const q=document.getElementById('pStateSearch').value.toLowerCase();
-  const res=STATES_IN.filter(s=>s.toLowerCase().includes(q));
-  const drop=document.getElementById('stateDrop');
-  drop.innerHTML=res.map(s=>`<div class="search-item" onclick="selectState('${s}')">${s}</div>`).join('');
-  drop.classList.add('show');
-}
-function showStateDrop(){filterState();document.getElementById('stateDrop').classList.add('show');}
-function selectState(s){
-  document.getElementById('pState').value=s;
-  document.getElementById('pStateSearch').value=s;
-  document.getElementById('stateDrop').classList.remove('show');
-  saveProfile();
-}
-
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.search-dropdown')){
-    document.querySelectorAll('.search-results').forEach(d=>d.classList.remove('show'));
-  }
-});
-
-// ===== PROFILE =====
+// ===== PROFILE ACTIONS =====
 function saveProfile(){
-  data.profile={
-    name:document.getElementById('pName').value,
-    codename:document.getElementById('pCodename').value,
-    phone:document.getElementById('pPhone').value,
-    email:document.getElementById('pEmail').value,
-    addr1:document.getElementById('pAddr1').value,
-    addr2:document.getElementById('pAddr2').value,
-    pincode:document.getElementById('pPin').value,
-    country:document.getElementById('pCountry').value,
-    state:document.getElementById('pState').value,
-    targetRole:document.getElementById('pTargetRole').value,
-    skills:document.getElementById('pSkills').value,
-    certs:document.getElementById('pCerts').value,
-    salary:document.getElementById('pSalary').value,
-    linkedin:document.getElementById('pLinkedin').value
+  D.profile={
+    name:(document.getElementById('pName')||{}).value||'',
+    codename:(document.getElementById('pCode')||{}).value||'',
+    phone:(document.getElementById('pPhone')||{}).value||'',
+    email:(document.getElementById('pEmail')||{}).value||'',
+    addr1:(document.getElementById('pAddr1')||{}).value||'',
+    addr2:(document.getElementById('pAddr2')||{}).value||'',
+    pincode:(document.getElementById('pPincode')||{}).value||'',
+    country:(document.getElementById('pCountry')||{}).value||'',
+    state:(document.getElementById('pState')||{}).value||'',
+    targetRole:(document.getElementById('pRole')||{}).value||'',
+    skills:(document.getElementById('pSkills')||{}).value||'',
+    certs:(document.getElementById('pCerts')||{}).value||'',
+    salary:(document.getElementById('pSalary')||{}).value||'',
+    linkedin:(document.getElementById('pLinkedin')||{}).value||''
   };
-  data.edu=getEduValues();
+  D.edu=Array.from(document.querySelectorAll('#eduList input')).map(i=>i.value.trim()).filter(Boolean);
   save();
-}
-function loadProfileFields(){
-  const p=data.profile||{};
-  const fields={pName:'name',pCodename:'codename',pPhone:'phone',pEmail:'email',pAddr1:'addr1',pAddr2:'addr2',pPin:'pincode',pTargetRole:'targetRole',pSkills:'skills',pCerts:'certs',pSalary:'salary',pLinkedin:'linkedin'};
-  Object.entries(fields).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.value=p[key]||'';});
-  if(p.country){document.getElementById('pCountrySearch').value=p.country;document.getElementById('pCountry').value=p.country;if(p.country==='India')document.getElementById('stateField').style.display='';}
-  if(p.state){document.getElementById('pStateSearch').value=p.state;document.getElementById('pState').value=p.state;}
-  document.getElementById('eduList').innerHTML='';eduCount=0;
-  (data.edu||[]).forEach(v=>addEduField(v));
-  if(data.photo){
-    document.getElementById('profilePhotoWrap').innerHTML=`<img src="${data.photo}" class="pm-photo" style="width:80px;height:80px;border-radius:50%;border:2px solid var(--red);display:block;margin:0 auto 8px;object-fit:cover" onclick="document.getElementById('photoInput').click()"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(this)"><div style="font-size:8px;letter-spacing:2px;color:var(--muted);text-align:center">TAP TO CHANGE</div>`;
-  }
+  if(D.profile.name){document.querySelectorAll('.banner-name').forEach(el=>el.textContent=D.profile.name.toUpperCase());}
 }
 function loadPhoto(input){
   const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{data.photo=e.target.result;save();loadProfileFields();};
-  reader.readAsDataURL(file);
+  const r=new FileReader();r.onload=e=>{D.photo=e.target.result;save();refreshPage();};r.readAsDataURL(file);
 }
+function addEduField(val=''){
+  const cnt=(D.edu||[]).length;if(cnt>=4){showToast('MAX 4 ENTRIES');return;}
+  D.edu.push(val);save();refreshPage();
+}
+function removeEdu(i){D.edu.splice(i,1);save();refreshPage();}
+function updateEdu(i,val){if(D.edu)D.edu[i]=val;save();}
+
+// ===== COUNTRY/STATE DROPDOWN =====
+function filterDrop(type){
+  const isCountry=type==='country';
+  const inputId=isCountry?'pCountryS':'pStateS';
+  const dropId=isCountry?'countryDrop':'stateDrop';
+  const list=isCountry?COUNTRIES:STATES_IN;
+  const q=(document.getElementById(inputId)||{}).value?.toLowerCase()||'';
+  const drop=document.getElementById(dropId);if(!drop)return;
+  const res=q?list.filter(x=>x.toLowerCase().includes(q)):list;
+  drop.innerHTML=res.slice(0,30).map(x=>`<div class="drop-item" onclick="selectDrop('${type}','${x}')">${x}</div>`).join('');
+  drop.classList.add('show');
+}
+function selectDrop(type,val){
+  if(type==='country'){
+    document.getElementById('pCountry').value=val;
+    document.getElementById('pCountryS').value=val;
+    document.getElementById('countryDrop').classList.remove('show');
+    const sf=document.getElementById('stateField');
+    if(sf)sf.style.display=val==='India'?'':'none';
+  }else{
+    document.getElementById('pState').value=val;
+    document.getElementById('pStateS').value=val;
+    document.getElementById('stateDrop').classList.remove('show');
+  }
+  saveProfile();
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-dd'))document.querySelectorAll('.drop-list').forEach(d=>d.classList.remove('show'));
+});
 
 // ===== PROFILE POPUP =====
 function openProfilePopup(){
-  playProfileSound();
-  const p=data.profile||{};
-  const photoHtml=data.photo?`<img src="${data.photo}" class="pm-photo">`:`<div class="pm-photo-ph">👤</div>`;
-  document.getElementById('pmContent').innerHTML=`
-    ${photoHtml}
-    <div class="pm-name">${(p.name||'OPERATIVE').toUpperCase()}</div>
-    <div class="pm-role">${(p.codename||'HITLIST AGENT').toUpperCase()}</div>
-    <div class="pm-divider"></div>
-    ${p.targetRole?`<div class="pm-detail">🎯 TARGET: ${p.targetRole.toUpperCase()}</div>`:''}
-    ${p.skills?`<div class="pm-detail">⚔️ ARMED: ${p.skills.toUpperCase()}</div>`:''}
-    ${p.salary?`<div class="pm-detail">💰 REWARD: ${p.salary.toUpperCase()}</div>`:''}
-    ${data.edu&&data.edu.length?`<div class="pm-detail">🎓 EDU: ${data.edu[0].toUpperCase()}</div>`:''}
-    <div class="pm-divider"></div>
-    <div class="pm-qr-label">SCAN TO VIEW PROFILE</div>
-    <div id="pmQR" style="width:120px;height:120px;margin:0 auto;background:#fff;padding:6px;border-radius:4px"></div>
-  `;
+  audioProfileOpen();audioGunshot();
+  const p=D.profile||{};
+  const ph=D.photo?`<img src="${D.photo}" class="pp-photo">`:`<div class="pp-photo-ph">👤</div>`;
+  document.getElementById('ppContent').innerHTML=`
+    ${ph}
+    <div class="pp-name">${(p.name||'OPERATIVE').toUpperCase()}</div>
+    <div class="pp-role">${(p.codename||'HITLIST AGENT').toUpperCase()}</div>
+    <div class="pp-divider"></div>
+    ${p.targetRole?`<div class="pp-detail">🎯 TARGET: ${p.targetRole}</div>`:''}
+    ${p.skills?`<div class="pp-detail">⚔️ ARMED: ${p.skills}</div>`:''}
+    ${p.salary?`<div class="pp-detail">💰 REWARD: ${p.salary}</div>`:''}
+    ${D.edu&&D.edu[0]?`<div class="pp-detail">🎓 ${D.edu[0]}</div>`:''}
+    <div class="pp-divider"></div>
+    <div class="pp-qr-lbl">SCAN TO VIEW PROFILE</div>
+    <div id="ppQR" style="width:110px;height:110px;margin:0 auto;background:#fff;padding:6px;border-radius:4px"></div>`;
   document.getElementById('profilePopup').classList.add('show');
-  try{
-    const qrUrl=p.linkedin||window.location.href;
-    setTimeout(()=>{
-      try{new QRCode(document.getElementById('pmQR'),{text:qrUrl,width:108,height:108,colorDark:'#000',colorLight:'#fff'});}catch(e){}
-    },100);
-  }catch(e){}
+  setTimeout(()=>{
+    try{new QRCode(document.getElementById('ppQR'),{text:p.linkedin||window.location.href,width:98,height:98,colorDark:'#000',colorLight:'#fff'});}catch(e){}
+  },150);
 }
 function closeProfilePopup(){document.getElementById('profilePopup').classList.remove('show');}
 
-// ===== SETTINGS =====
-function saveSettings(){data.settings.voice=document.getElementById('voiceToggle').checked;save();}
+// ===== POMODORO =====
+const POMO_FOCUS=25*60,POMO_BREAK=5*60;
+function togglePomo(){
+  pomoRunning=!pomoRunning;
+  if(pomoRunning){
+    if(!pomoDND){const dnd=confirm('ENABLE DND MODE? (Silence notifications during focus)');if(dnd){pomoDND=true;showDNDBanner(true);}}
+    pomoInterval=setInterval(tickPomo,1000);
+    speak(pomoBreak?'Break time. Relax.':'Focus session started. Lock in.');
+  }else{
+    clearInterval(pomoInterval);speak('Paused.');
+  }
+  refreshStudyButtons();
+}
+function tickPomo(){
+  if(pomoSeconds>0){pomoSeconds--;updatePomoDisplay();}
+  else{
+    clearInterval(pomoInterval);pomoRunning=false;
+    audioPomoEnd();
+    if(!pomoBreak){
+      D.settings.pomoCount=(D.settings.pomoCount||0)+1;save();
+      showToast('FOCUS SESSION COMPLETE! TAKE A BREAK.');speak('Focus session complete. Take a break, boss.');
+      pomoBreak=true;pomoSeconds=POMO_BREAK;
+    }else{
+      showToast('BREAK OVER. BACK TO WORK.');speak('Break over. Back to work. Lock in.');
+      pomoBreak=false;pomoSeconds=POMO_FOCUS;pomoDND=false;showDNDBanner(false);
+    }
+    refreshStudyButtons();updatePomoDisplay();
+  }
+}
+function resetPomo(){
+  clearInterval(pomoInterval);pomoRunning=false;pomoSeconds=pomoBreak?POMO_BREAK:POMO_FOCUS;
+  pomoDND=false;showDNDBanner(false);
+  updatePomoDisplay();refreshStudyButtons();
+}
+function setPomoMode(isBreak){
+  clearInterval(pomoInterval);pomoRunning=false;pomoBreak=isBreak;
+  pomoSeconds=isBreak?POMO_BREAK:POMO_FOCUS;
+  updatePomoDisplay();refreshStudyButtons();
+}
+function updatePomoDisplay(){
+  const d=document.getElementById('pomoDisplay');const b=document.getElementById('pomoBar');const l=document.getElementById('pomoLabel');
+  if(d)d.textContent=formatTime(pomoSeconds);
+  if(l)l.textContent=pomoBreak?'BREAK TIME':'FOCUS SESSION';
+  if(b){const total=pomoBreak?POMO_BREAK:POMO_FOCUS;b.style.width=(pomoSeconds/total*100)+'%';}
+}
+function refreshStudyButtons(){
+  const btn=document.getElementById('pomoStartBtn');if(btn){btn.textContent=pomoRunning?'PAUSE':'START';btn.classList.toggle('active',pomoRunning);}
+  const c=document.getElementById('pomoCount');if(c)c.textContent=D.settings.pomoCount||0;
+}
+function showDNDBanner(show){
+  const b=document.getElementById('dndBanner');if(b){b.classList.toggle('show',show);}
+}
+function formatTime(s){const m=Math.floor(s/60);const sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');}
+
+// ===== CLOCK =====
+function initClock(){clockInterval=setInterval(updateClockDisplay,1000);updateClockDisplay();}
+function updateClockDisplay(){
+  const now=new Date();
+  const ct=document.getElementById('clockTime');const cd=document.getElementById('clockDate');
+  if(ct)ct.textContent=now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(cd)cd.textContent=now.toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+function toggleClock(){
+  clockVisible=!clockVisible;
+  document.getElementById('clockFS').classList.toggle('show',clockVisible);
+}
+function startClockUpdate(){updateClockDisplay();}
+
+// ===== NOTES =====
+function addNote(){
+  const title=(document.getElementById('noteTitle')||{}).value?.trim()||'';
+  const body=(document.getElementById('noteBody')||{}).value?.trim()||'';
+  if(!body){showToast('NOTE CANNOT BE EMPTY');return;}
+  D.notes.unshift({id:Date.now(),title,body,date:new Date().toISOString()});save();
+  document.getElementById('noteTitle').value='';document.getElementById('noteBody').value='';
+  refreshPage();showToast('NOTE SAVED');audio(660,0.15,'sine',0.2);
+}
+function deleteNote(i){D.notes.splice(i,1);save();refreshPage();}
+
+// ===== VOICE NOTES =====
+function initVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){return;}
+  voiceRecognition=new SR();
+  voiceRecognition.continuous=false;voiceRecognition.interimResults=false;voiceRecognition.lang='en-US';
+  voiceRecognition.onresult=e=>{
+    const text=e.results[0][0].transcript;
+    const nb=document.getElementById('noteBody');
+    if(nb)nb.value=(nb.value?nb.value+' ':'')+text;
+    voiceActive=false;updateVoiceStatus(false);
+  };
+  voiceRecognition.onerror=()=>{voiceActive=false;updateVoiceStatus(false);showToast('VOICE ERROR. TRY AGAIN.');};
+  voiceRecognition.onend=()=>{voiceActive=false;updateVoiceStatus(false);};
+}
+function toggleVoiceNote(){
+  if(!voiceRecognition){showToast('VOICE NOT SUPPORTED ON THIS BROWSER');return;}
+  if(voiceActive){voiceRecognition.stop();voiceActive=false;updateVoiceStatus(false);}
+  else{voiceRecognition.start();voiceActive=true;updateVoiceStatus(true);showToast('LISTENING...');}
+}
+function updateVoiceStatus(on){
+  const btn=document.getElementById('voiceNoteBtn');const st=document.getElementById('voiceStatus');
+  if(btn){btn.textContent=on?'🔴 STOP':'🎤 VOICE';btn.style.borderColor=on?'var(--red)':'var(--border)';}
+  if(st)st.textContent=on?'LISTENING... SPEAK NOW':'';
+}
+
+// ===== DOUBT PORTAL =====
+async function sendDoubt(){
+  const input=document.getElementById('doubtIn');
+  const q=input?.value?.trim();if(!q)return;
+  input.value='';
+  doubts.push({role:'user',text:q});
+  const exam=D.settings.exam||'gen';
+  const examContext={ca:'CA, Finance, Accounting, Tally, GST, Taxation',upsc:'UPSC, Indian Polity, History, Geography, Current Affairs',eng:'Engineering, Physics, Mathematics, Computers',med:'Medical, Biology, Chemistry, NEET',law:'Law, Indian Constitution, IPC, Legal Studies',gen:'General Knowledge, Science, Math'};
+  const ctx=examContext[exam]||'General studies';
+  updateDoubtUI();
+  const thinkId=Date.now();
+  doubts.push({role:'ai',text:'Thinking...',id:thinkId,thinking:true});
+  updateDoubtUI();
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:`You are a helpful study assistant for a student studying ${ctx}. Answer questions clearly and concisely. Keep answers under 150 words. Use simple English. Add a key point or tip at the end.`,
+        messages:[{role:'user',content:q}]
+      })
+    });
+    const data=await resp.json();
+    const ans=data.content?.[0]?.text||'Sorry, could not get answer. Please try again.';
+    doubts=doubts.filter(d=>d.id!==thinkId);
+    doubts.push({role:'ai',text:ans});
+  }catch(e){
+    doubts=doubts.filter(d=>d.id!==thinkId);
+    doubts.push({role:'ai',text:'Connection error. Check internet and try again.'});
+  }
+  updateDoubtUI();
+}
+function updateDoubtUI(){
+  const wrap=document.getElementById('doubtMsgs');if(!wrap)return;
+  wrap.innerHTML=doubts.map(d=>`<div class="doubt-msg ${d.role}${d.thinking?' ai-thinking':''}">${d.text}</div>`).join('');
+  wrap.scrollTop=wrap.scrollHeight;
+}
+
+// ===== AI JOBS =====
+async function searchAIJobs(){
+  const skills=(document.getElementById('ajSkills')||{}).value?.trim()||D.profile.skills||'';
+  const exp=(document.getElementById('ajExp')||{}).value||'0';
+  const loc=(document.getElementById('ajLoc')||{}).value?.trim()||'India';
+  const res=document.getElementById('aiJobResults');
+  if(!res)return;
+  if(!skills){showToast('ENTER YOUR SKILLS FIRST');return;}
+  res.innerHTML='<div style="color:var(--muted);font-size:10px;text-align:center;padding:20px;letter-spacing:2px">SEARCHING...</div>';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:'You are a job search assistant. Return ONLY a JSON array of 6 job suggestions. No extra text. Format: [{"title":"Job Title","company":"Company Type","location":"Location","tags":["tag1","tag2"],"tip":"One line application tip"}]',
+        messages:[{role:'user',content:`Skills: ${skills}. Experience: ${exp} years. Location preference: ${loc}. Suggest 6 relevant job roles.`}]
+      })
+    });
+    const data=await resp.json();
+    const text=data.content?.[0]?.text||'[]';
+    let jobs=[];
+    try{const clean=text.replace(/```json|```/g,'').trim();jobs=JSON.parse(clean);}catch(e){jobs=[];}
+    if(!jobs.length){res.innerHTML='<div style="color:var(--muted);font-size:10px;text-align:center;padding:20px">NO RESULTS. TRY DIFFERENT SKILLS.</div>';return;}
+    res.innerHTML=jobs.map(j=>`<div class="ai-job-card"><div class="ai-job-title">${j.title}</div><div class="ai-job-comp">${j.company} • ${j.location}</div><div class="ai-job-tags">${(j.tags||[]).map(t=>`<span class="ai-job-tag">${t}</span>`).join('')}</div>${j.tip?`<div style="font-size:9px;color:var(--muted);margin-top:8px;letter-spacing:1px">💡 ${j.tip}</div>`:''}</div>`).join('');
+  }catch(e){res.innerHTML='<div style="color:var(--red);font-size:10px;text-align:center;padding:20px">ERROR. CHECK CONNECTION.</div>';}
+}
+
+// ===== SETTINGS ACTIONS =====
+function changePin(){
+  const op=(document.getElementById('oldPin')||{}).value?.trim();
+  const np=(document.getElementById('newPin')||{}).value?.trim();
+  if(op!==D.settings.pin){showToast('WRONG CURRENT PIN');return;}
+  if(!np||np.length!==4||isNaN(np)){showToast('NEW PIN MUST BE 4 DIGITS');return;}
+  D.settings.pin=np;save();
+  document.getElementById('oldPin').value='';document.getElementById('newPin').value='';
+  showToast('PIN UPDATED');speak('Access code updated.');
+}
+function saveSuggestion(){
+  const s=(document.getElementById('suggestionBox')||{}).value?.trim();
+  if(!s)return;
+  D.suggestions.push({text:s,date:new Date().toISOString()});save();
+  document.getElementById('suggestionBox').value='';
+  showToast('SUGGESTION SAVED. THANK YOU!');
+}
 function exportData(){
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hitlist_backup.json';a.click();
   showToast('DATA EXPORTED');
 }
-function clearData(){localStorage.removeItem('hl2');location.reload();}
+function clearAll(){localStorage.removeItem('hl3');location.reload();}
+
+// ===== REFRESH PAGE =====
+function refreshPage(){
+  if(isMobile){
+    const tabs=getMobTabs();
+    const pages=document.querySelectorAll('.mob-page');
+    pages.forEach((p,i)=>{
+      if(!tabs[i])return;
+      // don't blindly rebuild the quiz page from unrelated actions elsewhere —
+      // that was silently discarding the user's in-progress question
+      if(tabs[i].id==='quiz')return;
+      p.innerHTML=buildPageHTML(tabs[i].id);
+      afterPageRender(tabs[i].id);
+    });
+    updateMobStats();
+  }else{
+    const activeTab=document.querySelector('.desk-tab.active');
+    if(activeTab){const id=activeTab.id.replace('dtab_','');showDeskPage(id,activeTab);}
+    updateDeskStats();
+  }
+}
 
 // ===== TOAST =====
 function showToast(msg){
@@ -860,41 +1316,43 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ===== RENDER ALL =====
-function renderAll(){
-  renderTargets();updateStats();renderAlarms();loadProfileFields();
-  document.getElementById('voiceToggle').checked=data.settings.voice!==false;
-}
-
 // ===== INIT =====
 window.addEventListener('load',()=>{
   load();
-  window.speechSynthesis&&window.speechSynthesis.getVoices();
+  detectDevice(); // known early so the PIN screen already behaves correctly for this device
+  window.speechSynthesis?.getVoices();
   const msgs=['INITIALIZING...','LOADING INTEL...','ARMING SYSTEMS...','ACCESS GRANTED'];
   let mi=0;
   const si=setInterval(()=>{
-    mi++;
-    if(mi<msgs.length)document.getElementById('splashMsg').textContent=msgs[mi];
+    if(++mi<msgs.length)document.getElementById('splashMsg').textContent=msgs[mi];
     else{
       clearInterval(si);
       setTimeout(()=>{
         document.getElementById('splash').classList.add('hide');
         setTimeout(()=>{
           document.getElementById('splash').style.display='none';
-          document.getElementById('pinscreen').classList.add('show');
+          if(!D.settings.mode){document.getElementById('modeSelect').classList.add('show');}
+          else if((D.settings.mode==='student'||D.settings.mode==='both')&&!D.settings.exam){document.getElementById('examSelect').classList.add('show');}
+          else{document.getElementById('pinscreen').classList.add('show');}
         },800);
       },500);
     }
   },700);
-  setInterval(checkAlarms,30000);
-  Notification.requestPermission();
 });
-
+// re-check device classification on resize/orientation change (debounced);
+// if the category actually flips mid-session, reload so the correct
+// desktop/mobile layout renders cleanly instead of showing a hybrid state
+let deviceCheckTimer=null;
+window.addEventListener('resize',()=>{
+  if(!appInitialized)return;
+  clearTimeout(deviceCheckTimer);
+  deviceCheckTimer=setTimeout(()=>{
+    const was=isMobile;
+    detectDevice();
+    if(was!==isMobile)location.reload();
+  },400);
+});
 window.addEventListener('beforeunload',()=>speak('Going dark. Stay sharp, boss.'));
-document.getElementById('targetModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-document.getElementById('profilePopup').addEventListener('click',function(e){if(e.target===this)closeProfilePopup();});
-
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
