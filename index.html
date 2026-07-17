@@ -8,12 +8,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>HITLIST</title>
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
   --red:#ff2a2a;--bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;
-  --border:#2a2a2a;--text:#ffffff;--text2:#cccccc;--muted:#888;
+  --border:#2a2a2a;--text:#ffffff;--text2:#e0e0e0;--muted:#a8a8a8;
   --mono:'Share Tech Mono',monospace;--display:'Oswald',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden}
@@ -53,6 +55,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:1
 /* ===== PIN ===== */
 #pinscreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:996}
 #pinscreen.show{display:flex}
+
+/* ===== WELCOME (NAME ENTRY) ===== */
+#welcomeScreen{position:fixed;inset:0;background:#0a0a0a;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:995;padding:24px}
+#welcomeScreen.show{display:flex}
 .pin-title{font-family:'Cinzel',serif;font-size:26px;letter-spacing:8px;color:var(--red);margin-bottom:6px}
 .pin-sub{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:32px}
 .pin-dots{display:flex;gap:14px;margin-bottom:28px}
@@ -194,6 +200,12 @@ select.hl-input option{background:#111;color:#fff}
 .theme-med{--accent:#ff6b6b;--accent2:#cc3333}
 .theme-gen{--accent:#bb88ff;--accent2:#7733cc}
 .theme-law{--accent:#ff9944;--accent2:#cc6600}
+/* subtle exam-mood background tint — deliberately just color/atmosphere,
+   no third-party logos, emblems, or trademarks of any exam body */
+body.theme-ca,body.theme-upsc,body.theme-eng,body.theme-med,body.theme-gen,body.theme-law{
+  background-image:radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%);
+  background-attachment:fixed;
+}
 
 /* ===== STUDENT UI ===== */
 .student-header{padding:16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
@@ -326,6 +338,16 @@ select.hl-input option{background:#111;color:#fff}
   <div class="pin-forgot" onclick="forgotPin()">FORGOT PIN?</div>
 </div>
 
+<!-- WELCOME / NAME -->
+<div id="welcomeScreen">
+  <div class="pin-title">WELCOME BACK</div>
+  <div class="pin-sub">WHAT SHOULD WE CALL YOU?</div>
+  <div style="width:100%;max-width:300px;padding:0 24px">
+    <input class="hl-input" id="welcomeNameIn" placeholder="E.G. BOSS, SIR, MA'AM, CHIEF..." style="text-align:center;font-size:14px;letter-spacing:2px;margin-bottom:14px" maxlength="20" onkeydown="if(event.key==='Enter')saveWelcomeName()">
+    <button class="hl-btn primary" onclick="saveWelcomeName()">CONTINUE</button>
+  </div>
+</div>
+
 <!-- PROFILE POPUP -->
 <div class="profile-popup-bg" id="profilePopup" onclick="if(event.target===this)closeProfilePopup()">
   <div class="profile-popup">
@@ -409,8 +431,14 @@ select.hl-input option{background:#111;color:#fff}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+// ===== EXTERNAL SERVICE CONFIG =====
+// Fill these in once (see setup guide) — everything else in the app already
+// points at these two constants, so you never have to hunt through the code.
+const API_PROXY_URL = 'PASTE_YOUR_CLOUDFLARE_WORKER_URL_HERE'; // powers Doubt Portal + AI Jobs
+const FORMSPREE_URL = 'PASTE_YOUR_FORMSPREE_ENDPOINT_HERE';    // powers Settings → Suggestions
+
 // ===== STATE =====
-let D={targets:[],alarms:[],profile:{},edu:[],notes:[],settings:{pin:'1234',voice:true,mode:'',exam:'',theme:''},photo:null,suggestions:[]};
+let D={targets:[],alarms:[],profile:{},edu:[],notes:[],courses:[],settings:{pin:'1234',voice:true,mode:'',exam:'',theme:'',title:'',voiceStyle:'soft',lang:'en'},photo:null,suggestions:[]};
 let isMobile=false,curMobPage=0,touchX=0,touchY=0,eduCount=0;
 let pomoInterval=null,pomoSeconds=25*60,pomoRunning=false,pomoBreak=false,pomoDND=false;
 let clockInterval=null,clockVisible=false;
@@ -419,7 +447,7 @@ let doubts=[];
 let voiceRecognition=null,voiceActive=false;
 
 function save(){try{localStorage.setItem('hl3',JSON.stringify(D));}catch(e){}}
-function load(){try{const s=localStorage.getItem('hl3');if(s){D=JSON.parse(s);if(!D.edu)D.edu=[];if(!D.notes)D.notes=[];if(!D.suggestions)D.suggestions=[];}}catch(e){}}
+function load(){try{const s=localStorage.getItem('hl3');if(s){D=JSON.parse(s);if(!D.edu)D.edu=[];if(!D.notes)D.notes=[];if(!D.suggestions)D.suggestions=[];if(!D.courses)D.courses=[];if(D.settings.title===undefined)D.settings.title='';if(D.settings.voiceStyle===undefined)D.settings.voiceStyle='soft';if(D.settings.lang===undefined)D.settings.lang='en';}}catch(e){}}
 
 // ===== AUDIO =====
 function audio(freq=440,dur=0.3,type='sine',vol=0.3){
@@ -462,17 +490,61 @@ function audioProfileOpen(){
   }catch(e){}
 }
 function audioPomoEnd(){[0,0.25,0.5].forEach(t=>setTimeout(()=>audio(880,0.3,'sine',0.4),t*1000));}
+function audioClap(){
+  // synthesized applause — a burst of short noise "claps" at slightly randomized timing
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    for(let i=0;i<14;i++){
+      const t=i*0.09+Math.random()*0.04;
+      const bufSize=ctx.sampleRate*0.06;
+      const buf=ctx.createBuffer(1,bufSize,ctx.sampleRate);
+      const data=buf.getChannelData(0);
+      for(let j=0;j<bufSize;j++)data[j]=(Math.random()*2-1)*(1-j/bufSize);
+      const src=ctx.createBufferSource();src.buffer=buf;
+      const g=ctx.createGain();g.gain.setValueAtTime(0.5,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.06);
+      const filt=ctx.createBiquadFilter();filt.type='highpass';filt.frequency.value=1500;
+      src.connect(filt);filt.connect(g);g.connect(ctx.destination);
+      src.start(ctx.currentTime+t);
+    }
+  }catch(e){}
+}
 function audioPageChange(n){const f=[660,550,440,380,500];audio(f[n]||440,0.12,'sine',0.2);}
 
 // ===== SPEAK =====
+let cachedVoices=[];
+function refreshVoiceCache(){
+  if(window.speechSynthesis)cachedVoices=window.speechSynthesis.getVoices()||[];
+}
+if(window.speechSynthesis){
+  refreshVoiceCache();
+  window.speechSynthesis.onvoiceschanged=refreshVoiceCache;
+}
+function pickVoice(style){
+  if(!cachedVoices.length)refreshVoiceCache();
+  const en=cachedVoices.filter(v=>/en(-|_)/i.test(v.lang)||/english/i.test(v.name));
+  const pool=en.length?en:cachedVoices;
+  if(!pool.length)return null;
+  if(style==='deep'){
+    return pool.find(v=>/male|david|daniel|fred|google uk english male/i.test(v.name))||pool[0];
+  }
+  // default 'soft' — a calmer, more natural voice; female voices are perfectly
+  // fine here, this just avoids the old harsh/robotic deep-pitch trailer voice
+  return pool.find(v=>/female|zira|samantha|victoria|susan|karen|moira|tessa|google uk english female/i.test(v.name))||pool[0];
+}
 function speak(text){
   if(!D.settings.voice||pomoDND)return;
   if(!window.speechSynthesis)return;
-  const u=new SpeechSynthesisUtterance(text);u.rate=0.78;u.pitch=0.5;u.volume=1;
-  const v=window.speechSynthesis.getVoices();
-  const deep=v.find(x=>x.name.includes('Male')||x.name.includes('David')||x.name.includes('UK English Male'));
-  if(deep)u.voice=deep;
-  window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+  const style=D.settings.voiceStyle||'soft';
+  const u=new SpeechSynthesisUtterance(text);
+  if(style==='deep'){u.rate=0.85;u.pitch=0.65;}
+  else{u.rate=0.97;u.pitch=1.05;} // soft — closer to natural speaking pace/pitch
+  u.volume=1;
+  const v=pickVoice(style);
+  if(v)u.voice=v;
+  window.speechSynthesis.cancel();
+  // mobile Chrome/WebView sometimes silently drops speak() called immediately
+  // after cancel() — a tiny delay makes it fire reliably on phones
+  setTimeout(()=>{try{window.speechSynthesis.speak(u);}catch(e){}},60);
 }
 
 // ===== DETECT DEVICE =====
@@ -490,7 +562,9 @@ function detectDevice(){
 
 // ===== MODE & EXAM SELECT =====
 function selectMode(mode){
-  D.settings.mode=mode;save();
+  D.settings.mode=mode;
+  if(mode==='job'){D.settings.exam='';D.settings.theme='';} // job mode has no exam — stops old CA/UPSC badge leaking in
+  save();
   document.getElementById('modeSelect').classList.remove('show');
   if(mode==='student'||mode==='both'){
     document.getElementById('examSelect').classList.add('show');
@@ -521,7 +595,12 @@ function checkPin(){
   setTimeout(()=>{pinChecking=false;},300);
   if(pinBuf===D.settings.pin){
     document.getElementById('pinscreen').classList.remove('show');
-    initApp();
+    if(!D.settings.title){
+      document.getElementById('welcomeScreen').classList.add('show');
+      setTimeout(()=>document.getElementById('welcomeNameIn').focus(),300);
+    }else{
+      initApp();
+    }
   }else{
     document.getElementById('pinErr').textContent='WRONG CODE. TRY AGAIN.';
     audio(220,0.4,'sawtooth',0.3);pinBuf='';updateDots();
@@ -535,6 +614,13 @@ function forgotPin(){
     if(np&&np.length===4&&!isNaN(np)){D.settings.pin=np;save();alert('PIN UPDATED: '+np);}
     else alert('INVALID. USE 4 DIGITS.');
   }else alert('VERIFICATION FAILED.');
+}
+function saveWelcomeName(){
+  const val=(document.getElementById('welcomeNameIn')||{}).value?.trim();
+  D.settings.title=val||'BOSS';
+  save();
+  document.getElementById('welcomeScreen').classList.remove('show');
+  initApp();
 }
 
 // ===== KEYBOARD PIN (DESKTOP ONLY) =====
@@ -555,7 +641,7 @@ function initApp(){
   if(appInitialized)return; // guard against double-invocation (e.g. rapid PIN entry race)
   appInitialized=true;
   detectDevice();
-  speak('HITLIST activated. Welcome back, boss.');
+  speak(`HITLIST activated. Welcome back, ${D.settings.title||'boss'}.`);
   audio(660,0.2,'sine',0.3);
   if(isMobile)initMobile();
   else initDesktop();
@@ -640,7 +726,8 @@ function updateDeskStats(){
   }
   document.getElementById('deskStats').innerHTML=html;
   const examNames={ca:'CA/FINANCE',upsc:'UPSC',eng:'ENGINEERING',med:'MEDICAL',law:'LAW',gen:'GENERAL'};
-  if(D.settings.exam)document.getElementById('deskSub').textContent=examNames[D.settings.exam]||'CLASSIFIED';
+  const ds=document.getElementById('deskSub');
+  if(ds)ds.textContent=(m==='student'||m==='both')&&D.settings.exam?(examNames[D.settings.exam]||'CLASSIFIED'):'CLASSIFIED TRACKER';
 }
 
 // ===== MOBILE INIT =====
@@ -693,6 +780,9 @@ function goMobPage(n,el){
 }
 function updateMobStats(){
   const m=D.settings.mode;
+  const examNames={ca:'CA/FINANCE',upsc:'UPSC',eng:'ENGINEERING',med:'MEDICAL',law:'LAW',gen:'GENERAL'};
+  const ms=document.getElementById('mobSub');
+  if(ms)ms.textContent=(m==='student'||m==='both')&&D.settings.exam?(examNames[D.settings.exam]||'CLASSIFIED'):'CLASSIFIED';
   if(m==='student'){document.getElementById('mobStats').innerHTML='';return;}
   const tot=D.targets.length,sel=D.targets.filter(t=>t.status==='selected').length;
   document.getElementById('mobStats').innerHTML=`<div><div class="mob-stat-n">${tot}</div><div class="mob-stat-l">APPLIED</div></div><div><div class="mob-stat-n">${sel}</div><div class="mob-stat-l">SELECTED</div></div>`;
@@ -803,20 +893,65 @@ function buildStudyHTML(){
   </div>
   <div class="sec-label">SESSION TYPE</div>
   <div style="display:flex;gap:8px;margin-bottom:16px">
-    <button class="pomo-btn ${!pomoBreak?'active':''}" onclick="setPomoMode(false)" style="flex:1">25 MIN FOCUS</button>
-    <button class="pomo-btn ${pomoBreak?'active':''}" onclick="setPomoMode(true)" style="flex:1">5 MIN BREAK</button>
+    <button class="pomo-btn ${!pomoBreak?'active':''}" onclick="setPomoMode(false)" style="flex:1">${D.settings.pomoFocusMin||25} MIN FOCUS</button>
+    <button class="pomo-btn ${pomoBreak?'active':''}" onclick="setPomoMode(true)" style="flex:1">${D.settings.pomoBreakMin||5} MIN BREAK</button>
   </div>
-  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px">
+  <div class="sec-label">CUSTOM TIMER</div>
+  <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:16px">
+    <div class="field" style="flex:1;margin-bottom:0"><div class="hl-label">FOCUS (MIN)</div><input class="hl-input" type="number" id="pomoFocusIn" value="${D.settings.pomoFocusMin||25}" min="1" max="180"></div>
+    <div class="field" style="flex:1;margin-bottom:0"><div class="hl-label">BREAK (MIN)</div><input class="hl-input" type="number" id="pomoBreakIn" value="${D.settings.pomoBreakMin||5}" min="1" max="60"></div>
+    <button class="hl-btn primary" onclick="setCustomPomo()" style="width:auto;padding:0 16px;height:38px">SET</button>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:16px">
     <div class="hl-label" style="margin-bottom:8px">TODAY'S STATS</div>
     <div style="font-size:11px;color:var(--text2);letter-spacing:1px">POMODOROS TODAY: <span style="color:var(--red)" id="pomoCount">${D.settings.pomoCount||0}</span></div>
-  </div>`;
+  </div>
+  ${buildCoursesHTML()}`;
+}
+function buildCoursesHTML(){
+  const courses=D.courses||[];
+  const list=courses.map((c,i)=>`<div class="note-card"><div class="note-card-title"><span>📘 ${c.name}</span><button class="note-del" onclick="deleteCourse(${i})">✕</button></div>${c.notes?`<div class="note-card-body">${c.notes}</div>`:''}${c.link?`<div style="margin-top:6px"><a href="${c.link}" target="_blank" style="color:var(--red);font-size:10px;letter-spacing:1px">OPEN LINK →</a></div>`:''}</div>`).join('');
+  return`<div class="sec-label">COURSE LIBRARY</div>
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <input class="hl-input" id="courseNameIn" placeholder="COURSE / SUBJECT NAME" style="flex:2">
+    <button class="hl-btn primary" onclick="addCourse()" style="flex:1">+ ADD</button>
+  </div>
+  <div id="courseList">${list||'<div style="color:var(--muted);font-size:10px;letter-spacing:1px;text-align:center;padding:14px">NO COURSES YET — BUILD YOUR LIBRARY</div>'}</div>`;
+}
+function addCourse(){
+  const nameIn=document.getElementById('courseNameIn');
+  const name=nameIn.value.trim();
+  if(!name){showToast('ENTER A COURSE NAME');return;}
+  D.courses=D.courses||[];
+  D.courses.push({name,notes:'',link:'',added:Date.now()});
+  save();refreshPage();
+  showToast('COURSE ADDED TO LIBRARY');
+}
+function deleteCourse(i){
+  D.courses.splice(i,1);save();refreshPage();
 }
 
 // ===== NOTES PAGE =====
+function renderNoteBody(body){
+  return body.split('\n').map(line=>{
+    const img=line.match(/^!\[.*?\]\((.+?)\)$/);
+    if(img)return `<img src="${img[1]}" style="max-width:100%;border-radius:4px;margin:6px 0;display:block">`;
+    if(line.startsWith('### '))return `<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--red);margin:8px 0 2px">${line.slice(4)}</div>`;
+    if(line.startsWith('## '))return `<div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--text);margin:10px 0 4px;font-weight:600">${line.slice(3)}</div>`;
+    if(!line.trim())return '<br>';
+    return `<div>${line}</div>`;
+  }).join('');
+}
 function buildNotesHTML(){
-  const noteCards=D.notes.map((n,i)=>`<div class="note-card"><div class="note-card-title"><span>${n.title||'NOTE '+(i+1)}</span><button class="note-del" onclick="deleteNote(${i})">✕</button></div><div class="note-card-body">${n.body}</div></div>`).join('');
+  const noteCards=D.notes.map((n,i)=>`<div class="note-card"><div class="note-card-title"><span>${n.title||'NOTE '+(i+1)}</span><span><button class="note-del" onclick="speakNote(${i})" style="color:var(--red);margin-right:6px" title="Listen">🔊</button><button class="note-del" onclick="deleteNote(${i})">✕</button></span></div><div class="note-card-body">${renderNoteBody(n.body)}</div></div>`).join('');
   return`<div class="sec-label">NEW NOTE</div>
   <div class="field"><div class="hl-label">TITLE</div><input class="hl-input" id="noteTitle" placeholder="NOTE TITLE"></div>
+  <div style="display:flex;gap:6px;margin-bottom:6px">
+    <button class="hl-btn" onclick="insertNoteFormat('## ')" style="flex:1;padding:6px;font-size:9px">H1 HEADING</button>
+    <button class="hl-btn" onclick="insertNoteFormat('### ')" style="flex:1;padding:6px;font-size:9px">H2 SUBHEADING</button>
+    <button class="hl-btn" onclick="document.getElementById('noteImgIn').click()" style="flex:1;padding:6px;font-size:9px">🖼️ IMAGE</button>
+    <input type="file" id="noteImgIn" accept="image/*" style="display:none" onchange="insertNoteImage(this)">
+  </div>
   <div class="field"><div class="hl-label">CONTENT</div><textarea class="hl-input" id="noteBody" style="min-height:100px;resize:vertical" placeholder="YOUR NOTES HERE..."></textarea></div>
   <div style="display:flex;gap:8px">
     <button class="hl-btn primary" onclick="addNote()" style="flex:2">+ SAVE NOTE</button>
@@ -824,6 +959,41 @@ function buildNotesHTML(){
   </div>
   <div id="voiceStatus" style="font-size:9px;letter-spacing:2px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px"></div>
   <div style="margin-top:16px"><div class="sec-label">SAVED NOTES</div>${noteCards||'<div style="text-align:center;color:var(--muted);font-size:10px;padding:20px">NO NOTES YET</div>'}</div>`;
+}
+function insertNoteFormat(prefix){
+  const ta=document.getElementById('noteBody');if(!ta)return;
+  const pos=ta.selectionStart||ta.value.length;
+  const before=ta.value.slice(0,pos),after=ta.value.slice(pos);
+  const needsNL=before&&!before.endsWith('\n');
+  const insert=(needsNL?'\n':'')+prefix;
+  ta.value=before+insert+after;
+  ta.focus();ta.selectionStart=ta.selectionEnd=pos+insert.length;
+}
+function insertNoteImage(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const ta=document.getElementById('noteBody');if(!ta)return;
+    const pos=ta.selectionStart||ta.value.length;
+    const before=ta.value.slice(0,pos),after=ta.value.slice(pos);
+    const needsNL=before&&!before.endsWith('\n');
+    const insert=(needsNL?'\n':'')+`![image](${e.target.result})\n`;
+    ta.value=before+insert+after;
+    showToast('IMAGE ADDED TO NOTE');
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function speakNote(i){
+  const n=D.notes[i];if(!n)return;
+  if(!window.speechSynthesis){showToast('VOICE PLAYBACK NOT SUPPORTED');return;}
+  const plain=n.body.replace(/!\[.*?\]\(.+?\)/g,'').replace(/^#{2,3}\s*/gm,'');
+  const style=D.settings.voiceStyle||'soft';
+  const u=new SpeechSynthesisUtterance((n.title?n.title+'. ':'')+plain);
+  u.rate=style==='deep'?0.85:0.97;u.pitch=style==='deep'?0.65:1.05;u.volume=1;
+  const v=pickVoice(style);if(v)u.voice=v;
+  window.speechSynthesis.cancel();
+  setTimeout(()=>{try{window.speechSynthesis.speak(u);}catch(e){}},60);
 }
 
 // ===== QUIZ PAGE =====
@@ -920,7 +1090,25 @@ function buildSettingsHTML(){
   </div>
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
     <div class="hl-label" style="margin-bottom:10px">VOICE SYSTEM</div>
-    <label style="font-size:11px;letter-spacing:1px;color:var(--text2);display:flex;align-items:center;gap:10px;cursor:pointer"><input type="checkbox" id="voiceToggle" ${D.settings.voice?'checked':''} onchange="D.settings.voice=this.checked;save()"> VOICE ENABLED</label>
+    <label style="font-size:11px;letter-spacing:1px;color:var(--text2);display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:10px"><input type="checkbox" id="voiceToggle" ${D.settings.voice?'checked':''} onchange="D.settings.voice=this.checked;save()"> VOICE ENABLED</label>
+    <div class="hl-label" style="margin-bottom:6px">VOICE TONE</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="pomo-btn ${(D.settings.voiceStyle||'soft')==='soft'?'active':''}" style="flex:1" onclick="D.settings.voiceStyle='soft';save();speak('Voice tone set to soft.')">SOFT</button>
+      <button class="pomo-btn ${D.settings.voiceStyle==='deep'?'active':''}" style="flex:1" onclick="D.settings.voiceStyle='deep';save();speak('Voice tone set to deep.')">DEEP</button>
+    </div>
+    <div class="hl-label" style="margin-bottom:6px">YOUR NAME / TITLE</div>
+    <div style="display:flex;gap:8px">
+      <input class="hl-input" id="titleIn" value="${D.settings.title||''}" placeholder="BOSS / SIR / MA'AM..." maxlength="20">
+      <button class="hl-btn primary" style="width:auto;padding:0 14px" onclick="D.settings.title=(document.getElementById('titleIn').value.trim()||'BOSS');save();showToast('UPDATED')">SAVE</button>
+    </div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
+    <div class="hl-label" style="margin-bottom:10px">CONTENT LANGUAGE</div>
+    <div style="display:flex;gap:8px">
+      <button class="pomo-btn ${(D.settings.lang||'en')==='en'?'active':''}" style="flex:1" onclick="D.settings.lang='en';save();refreshPage()">ENGLISH</button>
+      <button class="pomo-btn ${D.settings.lang==='hi'?'active':''}" style="flex:1" onclick="D.settings.lang='hi';save();refreshPage()">हिंदी</button>
+    </div>
+    <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:8px">AFFECTS VOICE NOTE RECOGNITION LANGUAGE. FULL HINDI QUIZ CONTENT COMING SOON.</div>
   </div>
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:12px">
     <div class="hl-label" style="margin-bottom:10px">CHANGE MODE</div>
@@ -976,7 +1164,7 @@ function openTargetModal(id){
 function updateTargetStatus(id,status){
   const t=D.targets.find(x=>x.id===id);if(!t)return;
   t.status=status;save();refreshPage();
-  const m={rejected:['TARGET ELIMINATED','Target eliminated.'],interview:['ENGAGEMENT CONFIRMED','Engagement confirmed.'],selected:['MISSION COMPLETE. WELL PLAYED BOSS.','Mission complete. Well played, boss.']};
+  const m={rejected:['TARGET ELIMINATED','Target eliminated.'],interview:['ENGAGEMENT CONFIRMED','Engagement confirmed.'],selected:['MISSION COMPLETE. WELL PLAYED.',`Mission complete. Well played, ${D.settings.title||'boss'}.`]};
   if(m[status]){showToast(m[status][0]);speak(m[status][1]);audio(status==='selected'?880:440,0.3,'sine',0.3);}
 }
 function updateNotes(id,val){const t=D.targets.find(x=>x.id===id);if(t){t.notes=val;save();}}
@@ -998,7 +1186,7 @@ function checkAlarms(){
   D.alarms.forEach(a=>{
     if(!a.fired&&new Date(a.time)<=now){
       a.fired=true;save();
-      if(!pomoDND){showToast('🔔 ALERT! '+a.label);speak('Alert. Alert. Boss. You have a mission. '+a.label+'. Move now.');audioAlarm();}
+      if(!pomoDND){showToast('🔔 ALERT! '+a.label);speak(`Alert. Alert. ${D.settings.title||'Boss'}. You have a mission. `+a.label+'. Move now.');audioAlarm();}
       if(Notification.permission==='granted')new Notification('HITLIST ALARM',{body:a.label});
     }
   });
@@ -1092,7 +1280,19 @@ function openProfilePopup(){
 function closeProfilePopup(){document.getElementById('profilePopup').classList.remove('show');}
 
 // ===== POMODORO =====
-const POMO_FOCUS=25*60,POMO_BREAK=5*60;
+function POMO_FOCUS(){return (D.settings.pomoFocusMin||25)*60;}
+function POMO_BREAK(){return (D.settings.pomoBreakMin||5)*60;}
+function setCustomPomo(){
+  const fIn=document.getElementById('pomoFocusIn'),bIn=document.getElementById('pomoBreakIn');
+  const f=parseInt(fIn.value),b=parseInt(bIn.value);
+  if(!f||f<1||f>180){showToast('FOCUS TIME: 1-180 MIN');return;}
+  if(!b||b<1||b>60){showToast('BREAK TIME: 1-60 MIN');return;}
+  D.settings.pomoFocusMin=f;D.settings.pomoBreakMin=b;save();
+  clearInterval(pomoInterval);pomoRunning=false;
+  pomoSeconds=pomoBreak?POMO_BREAK():POMO_FOCUS();
+  updatePomoDisplay();refreshStudyButtons();
+  showToast('TIMER UPDATED: '+f+' MIN FOCUS / '+b+' MIN BREAK');
+}
 function togglePomo(){
   pomoRunning=!pomoRunning;
   if(pomoRunning){
@@ -1108,33 +1308,34 @@ function tickPomo(){
   if(pomoSeconds>0){pomoSeconds--;updatePomoDisplay();}
   else{
     clearInterval(pomoInterval);pomoRunning=false;
-    audioPomoEnd();
     if(!pomoBreak){
       D.settings.pomoCount=(D.settings.pomoCount||0)+1;save();
-      showToast('FOCUS SESSION COMPLETE! TAKE A BREAK.');speak('Focus session complete. Take a break, boss.');
-      pomoBreak=true;pomoSeconds=POMO_BREAK;
+      audioClap();
+      showToast('🎉 FOCUS SESSION COMPLETE! GREAT WORK.');speak(`Focus session complete. Excellent work, ${D.settings.title||'boss'}. Take a break.`);
+      pomoBreak=true;pomoSeconds=POMO_BREAK();
     }else{
+      audioPomoEnd();
       showToast('BREAK OVER. BACK TO WORK.');speak('Break over. Back to work. Lock in.');
-      pomoBreak=false;pomoSeconds=POMO_FOCUS;pomoDND=false;showDNDBanner(false);
+      pomoBreak=false;pomoSeconds=POMO_FOCUS();pomoDND=false;showDNDBanner(false);
     }
     refreshStudyButtons();updatePomoDisplay();
   }
 }
 function resetPomo(){
-  clearInterval(pomoInterval);pomoRunning=false;pomoSeconds=pomoBreak?POMO_BREAK:POMO_FOCUS;
+  clearInterval(pomoInterval);pomoRunning=false;pomoSeconds=pomoBreak?POMO_BREAK():POMO_FOCUS();
   pomoDND=false;showDNDBanner(false);
   updatePomoDisplay();refreshStudyButtons();
 }
 function setPomoMode(isBreak){
   clearInterval(pomoInterval);pomoRunning=false;pomoBreak=isBreak;
-  pomoSeconds=isBreak?POMO_BREAK:POMO_FOCUS;
+  pomoSeconds=isBreak?POMO_BREAK():POMO_FOCUS();
   updatePomoDisplay();refreshStudyButtons();
 }
 function updatePomoDisplay(){
   const d=document.getElementById('pomoDisplay');const b=document.getElementById('pomoBar');const l=document.getElementById('pomoLabel');
   if(d)d.textContent=formatTime(pomoSeconds);
   if(l)l.textContent=pomoBreak?'BREAK TIME':'FOCUS SESSION';
-  if(b){const total=pomoBreak?POMO_BREAK:POMO_FOCUS;b.style.width=(pomoSeconds/total*100)+'%';}
+  if(b){const total=pomoBreak?POMO_BREAK():POMO_FOCUS();b.style.width=(pomoSeconds/total*100)+'%';}
 }
 function refreshStudyButtons(){
   const btn=document.getElementById('pomoStartBtn');if(btn){btn.textContent=pomoRunning?'PAUSE':'START';btn.classList.toggle('active',pomoRunning);}
@@ -1175,7 +1376,8 @@ function initVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){return;}
   voiceRecognition=new SR();
-  voiceRecognition.continuous=false;voiceRecognition.interimResults=false;voiceRecognition.lang='en-US';
+  voiceRecognition.continuous=false;voiceRecognition.interimResults=false;
+  voiceRecognition.lang=D.settings.lang==='hi'?'hi-IN':'en-US';
   voiceRecognition.onresult=e=>{
     const text=e.results[0][0].transcript;
     const nb=document.getElementById('noteBody');
@@ -1210,7 +1412,12 @@ async function sendDoubt(){
   doubts.push({role:'ai',text:'Thinking...',id:thinkId,thinking:true});
   updateDoubtUI();
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    if(API_PROXY_URL.startsWith('PASTE_')){
+      doubts=doubts.filter(d=>d.id!==thinkId);
+      doubts.push({role:'ai',text:'⚠️ AI backend not connected yet. This needs a one-time setup (see chat) — not a real internet problem.'});
+      updateDoubtUI();return;
+    }
+    const resp=await fetch(API_PROXY_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -1245,8 +1452,12 @@ async function searchAIJobs(){
   if(!res)return;
   if(!skills){showToast('ENTER YOUR SKILLS FIRST');return;}
   res.innerHTML='<div style="color:var(--muted);font-size:10px;text-align:center;padding:20px;letter-spacing:2px">SEARCHING...</div>';
+  if(API_PROXY_URL.startsWith('PASTE_')){
+    res.innerHTML='<div style="color:var(--muted);font-size:10px;text-align:center;padding:20px;letter-spacing:1px">⚠️ AI backend not connected yet. This needs a one-time setup (see chat) — not a real internet problem.</div>';
+    return;
+  }
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const resp=await fetch(API_PROXY_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -1280,6 +1491,13 @@ function saveSuggestion(){
   if(!s)return;
   D.suggestions.push({text:s,date:new Date().toISOString()});save();
   document.getElementById('suggestionBox').value='';
+  if(!FORMSPREE_URL.startsWith('PASTE_')){
+    fetch(FORMSPREE_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({message:s,from:D.profile.name||'Anonymous user',mode:D.settings.mode,exam:D.settings.exam,date:new Date().toISOString()})
+    }).catch(()=>{});
+  }
   showToast('SUGGESTION SAVED. THANK YOU!');
 }
 function exportData(){
@@ -1321,6 +1539,9 @@ window.addEventListener('load',()=>{
   load();
   detectDevice(); // known early so the PIN screen already behaves correctly for this device
   window.speechSynthesis?.getVoices();
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
   const msgs=['INITIALIZING...','LOADING INTEL...','ARMING SYSTEMS...','ACCESS GRANTED'];
   let mi=0;
   const si=setInterval(()=>{
@@ -1352,7 +1573,7 @@ window.addEventListener('resize',()=>{
     if(was!==isMobile)location.reload();
   },400);
 });
-window.addEventListener('beforeunload',()=>speak('Going dark. Stay sharp, boss.'));
+window.addEventListener('beforeunload',()=>speak(`Going dark. Stay sharp, ${D.settings.title||'boss'}.`));
 </script>
 </body>
 </html>
