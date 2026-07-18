@@ -438,7 +438,7 @@ const API_PROXY_URL = 'PASTE_YOUR_CLOUDFLARE_WORKER_URL_HERE'; // powers Doubt P
 const FORMSPREE_URL = 'PASTE_YOUR_FORMSPREE_ENDPOINT_HERE';    // powers Settings → Suggestions
 
 // ===== STATE =====
-let D={targets:[],alarms:[],profile:{},edu:[],notes:[],courses:[],settings:{pin:'1234',voice:true,mode:'',exam:'',theme:'',title:'',voiceStyle:'soft',lang:'en'},photo:null,suggestions:[]};
+let D={targets:[],alarms:[],profile:{},edu:[],notes:[],courses:[],quizProgress:{},settings:{pin:'1234',voice:true,mode:'',exam:'',theme:'',title:'',voiceStyle:'soft',lang:'en'},photo:null,suggestions:[]};
 let isMobile=false,curMobPage=0,touchX=0,touchY=0,eduCount=0;
 let pomoInterval=null,pomoSeconds=25*60,pomoRunning=false,pomoBreak=false,pomoDND=false;
 let clockInterval=null,clockVisible=false;
@@ -447,7 +447,7 @@ let doubts=[];
 let voiceRecognition=null,voiceActive=false;
 
 function save(){try{localStorage.setItem('hl3',JSON.stringify(D));}catch(e){}}
-function load(){try{const s=localStorage.getItem('hl3');if(s){D=JSON.parse(s);if(!D.edu)D.edu=[];if(!D.notes)D.notes=[];if(!D.suggestions)D.suggestions=[];if(!D.courses)D.courses=[];if(D.settings.title===undefined)D.settings.title='';if(D.settings.voiceStyle===undefined)D.settings.voiceStyle='soft';if(D.settings.lang===undefined)D.settings.lang='en';}}catch(e){}}
+function load(){try{const s=localStorage.getItem('hl3');if(s){D=JSON.parse(s);if(!D.edu)D.edu=[];if(!D.notes)D.notes=[];if(!D.suggestions)D.suggestions=[];if(!D.courses)D.courses=[];if(!D.quizProgress)D.quizProgress={};if(D.settings.title===undefined)D.settings.title='';if(D.settings.voiceStyle===undefined)D.settings.voiceStyle='soft';if(D.settings.lang===undefined)D.settings.lang='en';}}catch(e){}}
 
 // ===== AUDIO =====
 function audio(freq=440,dur=0.3,type='sine',vol=0.3){
@@ -508,7 +508,8 @@ function audioClap(){
     }
   }catch(e){}
 }
-function audioPageChange(n){const f=[660,550,440,380,500];audio(f[n]||440,0.12,'sine',0.2);}
+const TAB_TONE={targets:660,alarms:550,profile:440,aijobs:380,settings:500,study:600,notes:520,quiz:460,doubt:400};
+function audioPageChange(id){audio(TAB_TONE[id]||440,0.12,'sine',0.2);}
 
 // ===== SPEAK =====
 let cachedVoices=[];
@@ -712,7 +713,7 @@ function showDeskPage(id,el){
   document.querySelectorAll('.desk-tab').forEach(t=>t.classList.remove('active'));
   const tab=el||document.getElementById('dtab_'+id);
   if(tab)tab.classList.add('active');
-  audioPageChange(getTabs().findIndex(t=>t.id===id));
+  audioPageChange(id);
   const c=document.getElementById('deskContent');
   c.innerHTML=`<div class="desk-page active">${buildPageHTML(id)}</div>`;
   afterPageRender(id);
@@ -775,8 +776,10 @@ function goMobPage(n,el){
   document.querySelectorAll('.mob-tab').forEach(t=>t.classList.remove('active'));
   const tab=el||document.getElementById('mtab_'+n);
   if(tab)tab.classList.add('active');
-  audioPageChange(n);
-  speak(['Targets.','Alarms.','Profile.','Jobs.','Settings.','Study.','Notes.','Quiz.','Doubt portal.'][n]||'');
+  const tabId=tabs[n]?tabs[n].id:'';
+  audioPageChange(tabId);
+  const SPOKEN_LABELS={targets:'Targets.',alarms:'Alarms.',profile:'Profile.',aijobs:'AI Jobs.',settings:'Settings.',study:'Study.',notes:'Notes.',quiz:'Quiz.',doubt:'Doubt portal.'};
+  speak(SPOKEN_LABELS[tabId]||'');
 }
 function updateMobStats(){
   const m=D.settings.mode;
@@ -1002,10 +1005,19 @@ function buildQuizHTML(){
   return`<div class="sec-label">QUIZ — ${examNames[D.settings.exam]||'GENERAL'}</div>
   <div id="quizContainer">${buildQuizCard()}</div>`;
 }
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
 function buildQuizCard(){
-  const qs=quizData[D.settings.exam]||quizData.gen||[];
+  const exam=D.settings.exam||'gen';
+  const qs=quizData[exam]||quizData.gen||[];
   if(!qs.length)return'<div style="color:var(--muted);text-align:center;padding:20px;font-size:11px">LOADING QUESTIONS...</div>';
-  const idx=Math.floor(Math.random()*qs.length);
+  D.quizProgress=D.quizProgress||{};
+  let prog=D.quizProgress[exam];
+  if(!prog||prog.date!==todayStr()){prog={date:todayStr(),shown:[]};}
+  let available=qs.map((_,i)=>i).filter(i=>!prog.shown.includes(i));
+  if(available.length===0){prog.shown=[];available=qs.map((_,i)=>i);} // full cycle done today — reshuffle, still no immediate repeats going forward
+  const idx=available[Math.floor(Math.random()*available.length)];
+  prog.shown.push(idx);
+  D.quizProgress[exam]=prog;save();
   curQuiz=qs[idx];quizAnswered=false;
   const opts=curQuiz.options.map((o,i)=>`<button class="quiz-opt" onclick="checkQuiz(${i},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
   return`<div class="quiz-card"><div class="quiz-q">Q. ${curQuiz.q}</div><div class="quiz-opts">${opts}</div><div class="quiz-exp" id="quizExp">${curQuiz.exp||''}</div></div><button class="hl-btn" onclick="nextQuiz()" style="margin-top:8px">NEXT QUESTION →</button>`;
@@ -1033,6 +1045,19 @@ function initQuizData(){
       {q:'Which is NOT a current asset?',options:['Cash','Debtors','Goodwill','Inventory'],ans:2,exp:'Goodwill is an intangible fixed/non-current asset.'},
       {q:'Trial Balance checks:',options:['Profitability','Arithmetic accuracy of ledger','Cash flow','Tax liability'],ans:1,exp:'Trial Balance verifies the arithmetic accuracy of the ledger entries.'},
       {q:'CGST full form:',options:['Central Goods and Services Tax','Combined GST','Common GST','Corporate GST'],ans:0,exp:'CGST is Central Goods and Services Tax levied by Central Government.'},
+      {q:'Which method values closing stock at lower of cost or NRV?',options:['FIFO','Conservatism principle','LIFO','Weighted average'],ans:1,exp:'The conservatism (prudence) principle requires stock to be valued at lower of cost or net realisable value.'},
+      {q:'Depreciation is charged on which type of asset?',options:['Current assets','Fixed tangible assets','Fictitious assets','Investments'],ans:1,exp:'Depreciation applies to fixed tangible assets that wear out over time.'},
+      {q:'Which financial statement shows a company\'s position at a point in time?',options:['Profit & Loss Account','Cash Flow Statement','Balance Sheet','Trial Balance'],ans:2,exp:'The Balance Sheet shows assets, liabilities and equity at a specific date.'},
+      {q:'Input Tax Credit under GST cannot be claimed on:',options:['Raw materials','Motor vehicles for personal use','Capital goods','Office supplies'],ans:1,exp:'ITC is blocked on motor vehicles used for personal consumption under Section 17(5).'},
+      {q:'What does "IFRS" stand for?',options:['International Financial Reporting Standards','Indian Financial Regulation System','International Fiscal Reporting Standard','Internal Finance Recording Standard'],ans:0,exp:'IFRS = International Financial Reporting Standards, issued by the IASB.'},
+      {q:'Which of these is a contra asset account?',options:['Accumulated Depreciation','Accounts Payable','Capital','Sales'],ans:0,exp:'Accumulated Depreciation reduces the value of a fixed asset — a contra asset.'},
+      {q:'Bank Reconciliation Statement is prepared to:',options:['Calculate profit','Match cash book and pass book balances','Compute tax liability','Value inventory'],ans:1,exp:'BRS reconciles differences between the cash book and bank passbook.'},
+      {q:'Which is an example of a direct tax?',options:['GST','Income Tax','Excise Duty','Customs Duty'],ans:1,exp:'Income Tax is a direct tax paid directly by the assessee to the government.'},
+      {q:'The Companies Act currently in force in India is:',options:['Companies Act 1956','Companies Act 2013','Companies Act 2019','Companies Act 1991'],ans:1,exp:'The Companies Act, 2013 is the current governing legislation.'},
+      {q:'Working capital is calculated as:',options:['Fixed Assets − Liabilities','Current Assets − Current Liabilities','Total Assets − Total Liabilities','Equity − Debt'],ans:1,exp:'Working Capital = Current Assets − Current Liabilities.'},
+      {q:'Which ratio measures short-term liquidity?',options:['Debt-Equity Ratio','Current Ratio','Return on Equity','Gross Profit Ratio'],ans:1,exp:'Current Ratio (Current Assets/Current Liabilities) measures short-term liquidity.'},
+      {q:'TDS stands for:',options:['Tax Deducted at Source','Total Deductible Sum','Tax Deposit Scheme','Tax Distribution System'],ans:0,exp:'TDS = Tax Deducted at Source, collected upfront on specified payments.'},
+      {q:'Which of these is an intangible asset?',options:['Land','Patents','Machinery','Cash'],ans:1,exp:'Patents are intangible assets — they have no physical form.'},
     ],
     upsc:[
       {q:'Which Article of Indian Constitution abolishes untouchability?',options:['Article 14','Article 17','Article 21','Article 32'],ans:1,exp:'Article 17 abolishes untouchability and forbids its practice.'},
@@ -1040,29 +1065,73 @@ function initQuizData(){
       {q:'Who appoints the Chief Election Commissioner?',options:['Prime Minister','Parliament','President','Vice President'],ans:2,exp:'The President appoints the Chief Election Commissioner.'},
       {q:'NITI Aayog replaced which body?',options:['Finance Commission','Planning Commission','Election Commission','CAG'],ans:1,exp:'NITI Aayog replaced the Planning Commission in January 2015.'},
       {q:'The Right to Education Act was passed in:',options:['2005','2007','2009','2011'],ans:2,exp:'The Right of Children to Free and Compulsory Education Act was passed in 2009.'},
+      {q:'Which schedule of the Constitution deals with anti-defection law?',options:['8th Schedule','9th Schedule','10th Schedule','12th Schedule'],ans:2,exp:'The 10th Schedule contains the anti-defection provisions.'},
+      {q:'The Preamble was amended by which amendment?',options:['42nd Amendment','44th Amendment','52nd Amendment','61st Amendment'],ans:0,exp:'The 42nd Amendment (1976) added "Socialist", "Secular" and "Integrity" to the Preamble.'},
+      {q:'Who is known as the Father of the Indian Constitution?',options:['Mahatma Gandhi','B.R. Ambedkar','Jawaharlal Nehru','Sardar Patel'],ans:1,exp:'Dr. B.R. Ambedkar chaired the Drafting Committee and is called the Father of the Indian Constitution.'},
+      {q:'The Fundamental Duties were added by which amendment?',options:['42nd Amendment','44th Amendment','61st Amendment','73rd Amendment'],ans:0,exp:'Fundamental Duties were added by the 42nd Amendment Act, 1976.'},
+      {q:'Which body conducts the UPSC Civil Services Examination?',options:['UGC','UPSC','SSC','NCERT'],ans:1,exp:'The Union Public Service Commission (UPSC) conducts the Civil Services Examination.'},
+      {q:'The Comptroller and Auditor General is appointed under Article:',options:['Article 148','Article 149','Article 76','Article 280'],ans:0,exp:'Article 148 provides for the appointment of the CAG of India.'},
+      {q:'Which river is known as the "Sorrow of Bihar"?',options:['Ganga','Kosi','Yamuna','Son'],ans:1,exp:'The Kosi river is called the "Sorrow of Bihar" due to frequent floods.'},
+      {q:'The Directive Principles of State Policy are inspired by the constitution of:',options:['USA','Ireland','Canada','Australia'],ans:1,exp:'DPSP were borrowed from the Irish Constitution.'},
+      {q:'Who was the first Speaker of the Lok Sabha?',options:['G.V. Mavalankar','Rajendra Prasad','Sarvepalli Radhakrishnan','K.M. Munshi'],ans:0,exp:'G.V. Mavalankar was the first Speaker of the Lok Sabha.'},
+      {q:'The Green Revolution in India is most associated with:',options:['M.S. Swaminathan','Norman Borlaug','Verghese Kurien','C. Subramaniam'],ans:0,exp:'M.S. Swaminathan is regarded as the father of India\'s Green Revolution.'},
+      {q:'India\'s first Five Year Plan focused mainly on:',options:['Industry','Agriculture','Education','Defence'],ans:1,exp:'The First Five Year Plan (1951-56) focused primarily on agriculture.'},
+      {q:'Which constitutional body regulates elections in India?',options:['Election Commission of India','Law Commission','Finance Commission','NITI Aayog'],ans:0,exp:'The Election Commission of India, under Article 324, conducts and regulates elections.'},
     ],
     eng:[
       {q:"Newton's Second Law states that F = ?",options:['ma','mv','m/a','v/t'],ans:0,exp:'Force = mass × acceleration (F = ma).'},
       {q:'Which data structure works on LIFO principle?',options:['Queue','Stack','Array','Tree'],ans:1,exp:'Stack follows Last In First Out (LIFO) principle.'},
       {q:'Ohm\'s Law: V = ?',options:['I/R','IR','I²R','R/I'],ans:1,exp:'V = IR where V is voltage, I is current, R is resistance.'},
       {q:'Binary of decimal 10 is:',options:['1010','1001','1100','1110'],ans:0,exp:'10 in binary is 1010 (8+2=10).'},
+      {q:'Which sorting algorithm has the best average time complexity?',options:['Bubble Sort O(n²)','Quick Sort O(n log n)','Selection Sort O(n²)','Insertion Sort O(n²)'],ans:1,exp:'Quick Sort has an average time complexity of O(n log n).'},
+      {q:'SI unit of electrical resistance is:',options:['Ampere','Volt','Ohm','Watt'],ans:2,exp:'Resistance is measured in Ohms (Ω).'},
+      {q:'Which gate gives output 1 only when both inputs are 1?',options:['OR','NOT','AND','NAND'],ans:2,exp:'AND gate outputs 1 only when both inputs are 1.'},
+      {q:'The unit of power is:',options:['Joule','Newton','Watt','Pascal'],ans:2,exp:'Power is measured in Watts (Joules per second).'},
+      {q:'Which of these is a normalisation form in DBMS?',options:['1NF','JSON','XML','REST'],ans:0,exp:'1NF (First Normal Form) is a step in database normalisation.'},
+      {q:'In OOP, hiding internal details is called:',options:['Inheritance','Polymorphism','Encapsulation','Abstraction'],ans:2,exp:'Encapsulation bundles data and methods while hiding internal implementation details.'},
+      {q:'The strength of a beam depends on its:',options:['Moment of inertia','Colour','Weight only','Length only'],ans:0,exp:'Beam strength depends on the moment of inertia of its cross-section.'},
+      {q:'Which material is a good conductor of heat?',options:['Wood','Rubber','Copper','Plastic'],ans:2,exp:'Copper is an excellent conductor of heat and electricity.'},
+      {q:'1 Horsepower is approximately equal to:',options:['746 Watts','1000 Watts','500 Watts','100 Watts'],ans:0,exp:'1 HP ≈ 746 Watts.'},
+      {q:'Which protocol is used to send email?',options:['HTTP','FTP','SMTP','SNMP'],ans:2,exp:'SMTP (Simple Mail Transfer Protocol) is used for sending emails.'},
     ],
     med:[
       {q:'The largest organ of the human body is:',options:['Liver','Brain','Skin','Heart'],ans:2,exp:'Skin is the largest organ of the human body.'},
       {q:'Normal blood pH range is:',options:['6.8-7.0','7.35-7.45','7.5-7.8','7.0-7.2'],ans:1,exp:'Normal blood pH is slightly alkaline: 7.35-7.45.'},
       {q:'Which blood group is universal donor?',options:['A+','B+','O-','AB+'],ans:2,exp:'O- (O negative) is the universal donor as it has no A, B, or Rh antigens.'},
       {q:'DNA stands for:',options:['Dioxynucleic Acid','Deoxyribonucleic Acid','Dinucleic Acid','Diribose Nucleic Acid'],ans:1,exp:'DNA stands for Deoxyribonucleic Acid.'},
+      {q:'The functional unit of the kidney is called:',options:['Neuron','Nephron','Alveolus','Villus'],ans:1,exp:'The Nephron is the functional unit of the kidney.'},
+      {q:'Which vitamin is produced by the skin on sun exposure?',options:['Vitamin A','Vitamin C','Vitamin D','Vitamin K'],ans:2,exp:'Vitamin D is synthesised in the skin when exposed to sunlight.'},
+      {q:'The normal resting heart rate for an adult is approximately:',options:['40-50 bpm','60-100 bpm','110-130 bpm','150-160 bpm'],ans:1,exp:'A normal adult resting heart rate is 60-100 beats per minute.'},
+      {q:'Which organ produces insulin?',options:['Liver','Pancreas','Kidney','Spleen'],ans:1,exp:'The Pancreas produces insulin via its Islets of Langerhans.'},
+      {q:'The smallest bone in the human body is located in the:',options:['Ear','Finger','Nose','Skull'],ans:0,exp:'The Stapes, in the ear, is the smallest bone in the human body.'},
+      {q:'Which gas is exchanged for oxygen during respiration?',options:['Nitrogen','Carbon dioxide','Hydrogen','Helium'],ans:1,exp:'Carbon dioxide is exchanged for oxygen during respiration.'},
+      {q:'The number of chambers in the human heart is:',options:['2','3','4','5'],ans:2,exp:'The human heart has 4 chambers: 2 atria and 2 ventricles.'},
+      {q:'Which cells are responsible for clotting blood?',options:['RBCs','WBCs','Platelets','Plasma cells'],ans:2,exp:'Platelets (thrombocytes) help in blood clotting.'},
     ],
     law:[
       {q:'IPC stands for:',options:['Indian Penal Code','Indian Police Code','Indian Procedural Code','Indian Protection Code'],ans:0,exp:'IPC stands for Indian Penal Code, enacted in 1860.'},
       {q:'Habeas Corpus means:',options:['You have the law','You shall have the body','Let justice be done','Command to produce'],ans:1,exp:'Habeas Corpus literally means "You shall have the body" — a writ protecting against unlawful detention.'},
       {q:'Article 21 protects:',options:['Right to Equality','Right to Life and Personal Liberty','Right to Freedom','Right against Exploitation'],ans:1,exp:'Article 21: No person shall be deprived of his life or personal liberty except according to procedure established by law.'},
+      {q:'The Indian Evidence Act was enacted in:',options:['1860','1872','1908','1950'],ans:1,exp:'The Indian Evidence Act was enacted in 1872.'},
+      {q:'CrPC stands for:',options:['Criminal Procedure Code','Civil Rights Protection Code','Court Regulation Procedure Code','Criminal Protection Code'],ans:0,exp:'CrPC = Code of Criminal Procedure, 1973.'},
+      {q:'A contract without consideration is generally:',options:['Valid','Void','Voidable','Illegal'],ans:1,exp:'Under the Indian Contract Act, an agreement without consideration is void (with certain exceptions).'},
+      {q:'Which writ is issued to prevent an authority from acting beyond its jurisdiction?',options:['Habeas Corpus','Mandamus','Prohibition','Certiorari'],ans:2,exp:'The writ of Prohibition stops a lower court/authority from exceeding its jurisdiction.'},
+      {q:'The doctrine of "res judicata" means:',options:['A matter already judged cannot be re-litigated','Let the buyer beware','Justice delayed is justice denied','None of these'],ans:0,exp:'Res judicata prevents re-litigation of a matter already finally decided.'},
+      {q:'Minimum age for a valid contract in India is:',options:['16 years','18 years','21 years','15 years'],ans:1,exp:'A person must be a major (18 years) to enter into a valid contract in India.'},
     ],
     gen:[
       {q:'Who wrote "Wings of Fire"?',options:['Narendra Modi','APJ Abdul Kalam','Amartya Sen','Ratan Tata'],ans:1,exp:'Wings of Fire is the autobiography of Dr. APJ Abdul Kalam.'},
       {q:'Capital of Australia:',options:['Sydney','Melbourne','Canberra','Perth'],ans:2,exp:'Canberra is the capital of Australia, not Sydney.'},
       {q:'Full form of CPU:',options:['Central Processing Unit','Computer Processing Unit','Central Program Unit','Core Processing Unit'],ans:0,exp:'CPU stands for Central Processing Unit — the brain of the computer.'},
       {q:'Which planet is closest to the Sun?',options:['Venus','Earth','Mars','Mercury'],ans:3,exp:'Mercury is the closest planet to the Sun.'},
+      {q:'The national animal of India is:',options:['Lion','Tiger','Elephant','Leopard'],ans:1,exp:'The Bengal Tiger is the national animal of India.'},
+      {q:'Which is the longest river in the world?',options:['Amazon','Nile','Yangtze','Ganga'],ans:1,exp:'The Nile is generally regarded as the longest river in the world.'},
+      {q:'The currency of Japan is:',options:['Yuan','Won','Yen','Ringgit'],ans:2,exp:'The Japanese Yen is the official currency of Japan.'},
+      {q:'How many continents are there?',options:['5','6','7','8'],ans:2,exp:'There are 7 continents on Earth.'},
+      {q:'The Taj Mahal is located in which city?',options:['Delhi','Agra','Jaipur','Lucknow'],ans:1,exp:'The Taj Mahal is located in Agra, Uttar Pradesh.'},
+      {q:'Who invented the telephone?',options:['Thomas Edison','Alexander Graham Bell','Nikola Tesla','James Watt'],ans:1,exp:'Alexander Graham Bell is credited with inventing the telephone.'},
+      {q:'The smallest country in the world by area is:',options:['Monaco','Vatican City','San Marino','Malta'],ans:1,exp:'Vatican City is the smallest country in the world by both area and population.'},
+      {q:'Which gas makes up the majority of Earth\'s atmosphere?',options:['Oxygen','Carbon Dioxide','Nitrogen','Hydrogen'],ans:2,exp:'Nitrogen makes up about 78% of Earth\'s atmosphere.'},
     ]
   };
 }
