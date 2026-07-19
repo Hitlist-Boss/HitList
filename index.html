@@ -229,14 +229,18 @@ body.theme-ca,body.theme-upsc,body.theme-eng,body.theme-med,body.theme-gen,body.
 .note-card-body{font-size:11px;color:var(--text2);line-height:1.6;white-space:pre-wrap}
 .note-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px}
 .note-del:hover{color:var(--red)}
-.quiz-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:18px;margin-bottom:12px}
-.quiz-q{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:14px}
-.quiz-opts{display:flex;flex-direction:column;gap:8px}
-.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:10px 12px;font-size:11px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-align:left;font-family:var(--mono);letter-spacing:0.5px}
-.quiz-opt:hover{border-color:var(--accent,var(--red));color:var(--text)}
-.quiz-opt.correct{border-color:#2aaa2a;background:#0a1a0a;color:#2aaa2a}
-.quiz-opt.wrong{border-color:var(--red);background:#1a0505;color:var(--red)}
-.quiz-exp{font-size:10px;color:var(--text2);margin-top:10px;padding:10px;background:var(--bg3);border-radius:3px;line-height:1.6;display:none}
+.quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:9px;letter-spacing:2px;color:var(--muted)}
+.quiz-meta .quiz-cat{color:var(--accent,var(--red));font-weight:600}
+.quiz-progress-track{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.quiz-progress-fill{height:100%;background:var(--accent,var(--red));border-radius:2px;transition:width 0.4s ease}
+.quiz-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:12px}
+.quiz-q{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:16px;font-weight:500}
+.quiz-opts{display:flex;flex-direction:column;gap:9px}
+.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:12px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--mono);letter-spacing:0.5px}
+.quiz-opt:hover{border-color:var(--accent,var(--red));color:var(--text);transform:translateX(2px)}
+.quiz-opt.correct{border-color:#2aaa2a;background:#0a1a0a;color:#3ee83e;font-weight:600}
+.quiz-opt.wrong{border-color:var(--red);background:#1a0505;color:var(--red);font-weight:600}
+.quiz-exp{font-size:11px;color:var(--text2);margin-top:12px;padding:12px;background:var(--bg3);border-left:3px solid var(--accent,var(--red));border-radius:3px;line-height:1.7;display:none}
 .quiz-exp.show{display:block}
 .doubt-wrap{display:flex;flex-direction:column;gap:10px}
 .doubt-msg{padding:10px 12px;border-radius:6px;font-size:11px;line-height:1.6;max-width:85%}
@@ -642,6 +646,7 @@ function initApp(){
   if(appInitialized)return; // guard against double-invocation (e.g. rapid PIN entry race)
   appInitialized=true;
   detectDevice();
+  initQuizData(); // must run before initMobile/initDesktop — mobile pre-builds ALL tabs upfront including Quiz, so quizData has to exist first or the quiz page renders empty forever
   speak(`HITLIST activated. Welcome back, ${D.settings.title||'boss'}.`);
   audio(660,0.2,'sine',0.3);
   if(isMobile)initMobile();
@@ -649,7 +654,6 @@ function initApp(){
   setInterval(checkAlarms,30000);
   Notification.requestPermission();
   initClock();
-  initQuizData();
   initVoice();
   setTimeout(showBanner,500);
 }
@@ -1019,8 +1023,12 @@ function buildQuizCard(){
   prog.shown.push(idx);
   D.quizProgress[exam]=prog;save();
   curQuiz=qs[idx];quizAnswered=false;
+  const examNames={ca:'CA/FINANCE',upsc:'UPSC',eng:'ENGINEERING',med:'MEDICAL',law:'LAW',gen:'GENERAL'};
   const opts=curQuiz.options.map((o,i)=>`<button class="quiz-opt" onclick="checkQuiz(${i},this)">${String.fromCharCode(65+i)}. ${o}</button>`).join('');
-  return`<div class="quiz-card"><div class="quiz-q">Q. ${curQuiz.q}</div><div class="quiz-opts">${opts}</div><div class="quiz-exp" id="quizExp">${curQuiz.exp||''}</div></div><button class="hl-btn" onclick="nextQuiz()" style="margin-top:8px">NEXT QUESTION →</button>`;
+  const pct=Math.round((prog.shown.length/qs.length)*100);
+  return`<div class="quiz-meta"><span class="quiz-cat">${examNames[exam]||'GENERAL'}</span><span>${prog.shown.length} / ${qs.length} TODAY</span></div>
+  <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:${pct}%"></div></div>
+  <div class="quiz-card"><div class="quiz-q">Q. ${curQuiz.q}</div><div class="quiz-opts">${opts}</div><div class="quiz-exp" id="quizExp">${curQuiz.exp||''}</div></div><button class="hl-btn" onclick="nextQuiz()" style="margin-top:8px">NEXT QUESTION →</button>`;
 }
 function checkQuiz(i,btn){
   if(quizAnswered)return;quizAnswered=true;
