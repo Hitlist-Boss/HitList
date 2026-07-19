@@ -1,4 +1,4 @@
-const CACHE = 'hitlist-v3';
+const CACHE = 'hitlist-v4';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
 self.addEventListener('install', e => {
   self.skipWaiting(); // don't wait for old tabs to close — activate the new version right away
